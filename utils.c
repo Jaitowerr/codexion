@@ -51,3 +51,18 @@ void free_context(t_context *ctx)
         ctx->threads = NULL;
     }
 }
+
+
+void	print_summary(t_context *ctx)
+{
+	int	i;
+
+	i = 0;
+	while (i < ctx->config->number_of_coders)
+	{
+		printf("Coder[%d]:\n", ctx->coders[i].id);
+		printf("  Left Dongle: %d\n", ctx->coders[i].left_dongle->id);
+		printf("  Right Dongle: %d\n", ctx->coders[i].right_dongle->id);
+		i++;
+	}
+}

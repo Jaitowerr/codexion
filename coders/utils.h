@@ -36,4 +36,6 @@ void free_context(t_context *ctx);
 /* malloc seguro: si falla, libera y sale */
 void *safe_malloc(size_t size, t_context *ctx);
 
+void	print_summary(t_context *ctx);
+
 #endif /* UTILS_H */

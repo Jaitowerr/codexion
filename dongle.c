@@ -20,8 +20,8 @@ void    init_dongles(t_dongle *dongle, int count)
     i = 0;
     while (i < count)
     {
-        dongle[i].id = i;
-        dongle[i].coder_id = i;
+        dongle[i].id = i + 1;
+        dongle[i].coder_id = i + 1;
         dongle[i].taken = false;
         gettimeofday(&dongle[i].available_at, NULL);
         pthread_mutex_init(&dongle[i].mutex, NULL);

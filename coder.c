@@ -19,7 +19,7 @@ void init_coders(t_coder *coders, t_dongle *dongles, int count, t_config *config
     i = 0;
     while (i < count)
     {
-        coders[i].id = i;
+        coders[i].id = i + 1;
         coders[i].compile_count = 0;
         coders[i].last_compile_start.tv_sec = 0;
         coders[i].last_compile_start.tv_usec = 0;
