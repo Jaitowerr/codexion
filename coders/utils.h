@@ -23,7 +23,7 @@ typedef struct s_context
     t_config    *config;
     t_dongle    *dongles;
     t_coder     *coders;
-    pthread_t  *threads;
+    pthread_t  *threads;    //pthread_t es un tipo especial de variable que identifica a cada hilo.
     
 } t_context;
 
@@ -38,6 +38,5 @@ void *safe_malloc(size_t size, t_context *ctx);
 
 void	print_summary(t_context *ctx);
 
-void create_threads(t_context *ctx);
 
 #endif /* UTILS_H */
