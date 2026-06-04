@@ -1,7 +1,7 @@
 NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
-SRC = main.c parser.c
+SRC = main.c parser.c dongle.c coder.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

@@ -24,5 +24,7 @@
 
 // Headers internos
 # include "parser.h"
+# include "dongle.h"
+# include "coder.h"
 
 #endif
