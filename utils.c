@@ -17,6 +17,7 @@ void init_context(t_context *ctx)
     ctx->config = NULL;
     ctx->dongles = NULL;
     ctx->coders = NULL;
+    ctx->threads = NULL;
 }
 
 void *safe_malloc(size_t size, t_context *ctx)
@@ -35,6 +36,11 @@ void *safe_malloc(size_t size, t_context *ctx)
 
 void free_context(t_context *ctx)
 {
+    // if (ctx->config)
+    // {
+    //     free(ctx->config);
+    //     ctx->config = NULL;
+    // }
     if (ctx->dongles)
     {
         free(ctx->dongles);

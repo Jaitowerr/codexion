@@ -33,4 +33,6 @@ t_coder *create_and_init_coders(int count, t_dongle *dongles, t_config *config, 
 
 void	init_coders(t_coder *coders, t_dongle *dongles, int count, t_config *config);
 
+void *coder_routine(void *arg);
+
 #endif

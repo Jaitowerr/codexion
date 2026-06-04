@@ -39,6 +39,12 @@ t_coder *create_and_init_coders(int count, t_dongle *dongles, t_config *config, 
     return (coders);
 }
 
+void *coder_routine(void *arg)
+{
+    t_coder *self = (t_coder *)arg;
+    printf("Programador %d: ¡Listo!!! A quemar CPU!!\n", self->id);
+    return NULL;
+}
 
 // void create(t_coder  *coders)
 // {

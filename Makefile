@@ -1,7 +1,7 @@
 NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
-SRC = main.c parser.c dongle.c coder.c utils.c
+SRC = main.c parser.c dongle.c coder.c utils.c thread.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
@@ -21,3 +21,5 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+
+# valgrind ./codexion 3 500 200 100 100 2 100 fifo

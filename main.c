@@ -42,7 +42,10 @@ int	main(int argc, char **argv)
 	ctx.config = &config;
 	ctx.dongles = create_and_init_dongles(config.number_of_coders, &ctx);
 	ctx.coders = create_and_init_coders(config.number_of_coders, ctx.dongles, &config, &ctx);
+
 	print_summary(&ctx);
+
+	create_threads(&ctx);
 
 	free_context(&ctx);
 	return (0);

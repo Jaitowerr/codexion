@@ -10,34 +10,25 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "coders/codexion.h"
 
-# include "codexion.h"
-# include <stdlib.h>
-# include <stdio.h>
-
-/* Contexto: guarda punteros a todo lo que reservemos */
-typedef struct s_context
+void create_threads(t_context *ctx)
 {
-    t_config    *config;
-    t_dongle    *dongles;
-    t_coder     *coders;
-    pthread_t  *threads;
-    
-} t_context;
+    int i;
 
-/* Inicializa el contexto a NULL */
-void init_context(t_context *ctx);
+    ctx->threads = safe_malloc(sizeof(pthread_t) * ctx->config->number_of_coders, ctx);
 
-/* Libera todo lo que haya en el contexto */
-void free_context(t_context *ctx);
+    i = 0;
+    while (i < ctx->config->number_of_coders)
+    {
+        pthread_create(&ctx->threads[i], NULL, coder_routine, &ctx->coders[i]); //Crea un nuevo hilo de ejecución. &ctx->threads[i] → Donde se guarda el ID del hilo (para luego hacer join) NULL → Atributos por defecto coder_routine → La función que ejecutará el hilo &ctx->coders[i] → El argumento que le pasamos (el programador)
+        i++;
+    }
 
-/* malloc seguro: si falla, libera y sale */
-void *safe_malloc(size_t size, t_context *ctx);
-
-void	print_summary(t_context *ctx);
-
-void create_threads(t_context *ctx);
-
-#endif /* UTILS_H */
+    i = 0;
+    while (i < ctx->config->number_of_coders)
+    {
+        pthread_join(ctx->threads[i], NULL); //Espera a que un hilo termine su ejecución. El main se queda esperando hasta que el programador i termine su trabajo.
+        i++;
+    }
+}
