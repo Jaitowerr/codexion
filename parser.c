@@ -25,58 +25,68 @@ static bool	is_number(char *str)
 	return (true);
 }
 
-bool	parse_arguments(int argc, char **argv, t_config *config)
+static bool	parse_int_arg(int *value, char *arg, const char *message)
 {
-	if (argc != 9)
+	if (!is_number(arg) || atoi(arg) <= 0)
 	{
-		printf("Uso: %s number_of_coders time_to_burnout time_to_compile\n",
-			argv[0]);
-		printf("      time_to_debug time_to_refactor number_of_compiles_required\n"
-			"      dongle_cooldown scheduler\n");
+		printf("%s\n", message);
 		return (false);
 	}
-	if (!is_number(argv[1]) || atoi(argv[1]) < 2)
+	*value = atoi(arg);
+	return (true);
+}
+
+static bool	validate_coders(char *arg)
+{
+	if (!is_number(arg) || atoi(arg) < 2)
 	{
 		printf("Error: number_of_coders debe ser mayor a 1.\n");
 		return (false);
 	}
+	return (true);
+}
+
+static bool	parse_int_params(t_config *config, char **argv)
+{
+	if (!parse_int_arg(&config->time_to_burnout, argv[2],
+			"Error: time_to_burnout debe ser un número mayor de 0."))
+		return (false);
+	if (!parse_int_arg(&config->time_to_compile, argv[3],
+			"Error: time_to_compile debe ser un entero mayor de 0."))
+		return (false);
+	if (!parse_int_arg(&config->time_to_debug, argv[4],
+			"Error: time_to_debug debe ser un entero mayor de 0."))
+		return (false);
+	if (!parse_int_arg(&config->time_to_refactor, argv[5],
+			"Error: time_to_refactor debe ser un entero mayor de 0."))
+		return (false);
+	if (!parse_int_arg(&config->number_of_compiles_required,
+			argv[6],
+			"Error: number_of_compiles_required debe ser un entero "
+			"mayor de 0."))
+		return (false);
+	if (!parse_int_arg(&config->dongle_cooldown, argv[7],
+			"Error: dongle_cooldown debe ser un entero mayor de 0."))
+		return (false);
+	return (true);
+}
+
+bool	parse_arguments(int argc, char **argv, t_config *config)
+{
+	if (argc != 9)
+	{
+		printf("Uso: %s number_of_coders time_to_burnout\n",
+			argv[0]);
+		printf("      time_to_compile time_to_debug\n"
+			"      time_to_refactor number_of_compiles_required\n"
+			"      dongle_cooldown scheduler\n");
+		return (false);
+	}
+	if (!validate_coders(argv[1]))
+		return (false);
 	config->number_of_coders = atoi(argv[1]);
-	if (!is_number(argv[2]) || atoi(argv[2]) <= 0)
-	{
-		printf("Error: time_to_burnout debe ser un número mayor de 0.\n");
+	if (!parse_int_params(config, argv))
 		return (false);
-	}
-	config->time_to_burnout = atoi(argv[2]);
-	if (!is_number(argv[3]) || atoi(argv[3]) <= 0)
-	{
-		printf("Error: time_to_compile debe ser un entero mayor de 0.\n");
-		return (false);
-	}
-	config->time_to_compile = atoi(argv[3]);
-	if (!is_number(argv[4]) || atoi(argv[4]) <= 0)
-	{
-		printf("Error: time_to_debug debe ser un entero mayor de 0.\n");
-		return (false);
-	}
-	config->time_to_debug = atoi(argv[4]);
-	if (!is_number(argv[5]) || atoi(argv[5]) <= 0)
-	{
-		printf("Error: time_to_refactor debe ser un entero mayor de 0.\n");
-		return (false);
-	}
-	config->time_to_refactor = atoi(argv[5]);
-	if (!is_number(argv[6]) || atoi(argv[6]) <= 0)
-	{
-		printf("Error: number_of_compiles_required debe ser un entero mayor de 0.\n");
-		return (false);
-	}
-	config->number_of_compiles_required = atoi(argv[6]);
-	if (!is_number(argv[7]) || atoi(argv[7]) <= 0)
-	{
-		printf("Error: dongle_cooldown debe ser un entero mayor de 0.\n");
-		return (false);
-	}
-	config->dongle_cooldown = atoi(argv[7]);
 	if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
 	{
 		printf("Error: scheduler debe ser 'fifo' o 'edf'.\n");

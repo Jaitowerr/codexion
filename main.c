@@ -24,9 +24,12 @@ int	main(int argc, char **argv)
 	printf(" - Tiempo de compilación (ms): %d\n", config.time_to_compile);
 	printf(" - Tiempo de depuración (ms): %d\n", config.time_to_debug);
 	printf(" - Tiempo de refactorización (ms): %d\n", config.time_to_refactor);
-	printf(" - Compilaciones requeridas: %d\n", config.number_of_compiles_required);
-	printf(" - Tiempo de cooldown de dongle (ms): %d\n", config.dongle_cooldown);
-	printf(" - Planificador (scheduler): %s\n", config.scheduler);
+	printf(" - Compilaciones requeridas: %d\n",
+		config.number_of_compiles_required);
+	printf(" - Tiempo de cooldown de dongle (ms): %d\n",
+		config.dongle_cooldown);
+	printf(" - Planificador (scheduler): %s\n",
+		config.scheduler);
 	printf("--------------------------------\n");
 	return (0);
 }
