@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,22 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CODEXION_H
-# define CODEXION_H
+#ifndef UTILS_H
+# define UTILS_H
 
-// Librerías
-# include <stdio.h>
+# include "codexion.h"
 # include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <pthread.h>
-# include <sys/time.h>
-# include <stdbool.h>
+# include <stdio.h>
 
-// Headers internos
-# include "parser.h"
-# include "dongle.h"
-# include "coder.h"
-# include "utils.h"
+/* Contexto: guarda punteros a todo lo que reservemos */
+typedef struct s_context
+{
+    t_config    *config;
+    t_dongle    *dongles;
+    t_coder     *coders;
+    pthread_t  *threads;
+    
+} t_context;
 
-#endif
+/* Inicializa el contexto a NULL */
+void init_context(t_context *ctx);
+
+/* Libera todo lo que haya en el contexto */
+void free_context(t_context *ctx);
+
+/* malloc seguro: si falla, libera y sale */
+void *safe_malloc(size_t size, t_context *ctx);
+
+#endif /* UTILS_H */

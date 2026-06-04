@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,22 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CODEXION_H
-# define CODEXION_H
-
-// Librerías
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <pthread.h>
-# include <sys/time.h>
-# include <stdbool.h>
-
-// Headers internos
-# include "parser.h"
-# include "dongle.h"
-# include "coder.h"
-# include "utils.h"
-
-#endif
+struct timeval {
+    long tv_sec;     // segundos
+    long long tv_usec;    // microsegundos (0 a 999999)
+};

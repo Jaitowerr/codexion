@@ -166,7 +166,416 @@ TEMPORIZADOR DE VIDA: [||||||||||] (Máximo: time_to_burnout)
 
 
 
+Funciones Autorizadas para Programación con Hilos POSIX
+Te presento información detallada sobre cada función autorizada en tu proyecto con ejemplos prácticos:
 
+Funciones de Gestión de Hilos
+pthread_create
+Crea un nuevo hilo de ejecución.
+
+c
+Copy
+int pthread_create(pthread_t *thread, 
+                   const pthread_attr_t *attr,
+                   void *(*start_routine)(void *),
+                   void *arg);
+Ejemplo:
+
+c
+Copy
+#include <pthread.h>
+#include <stdio.h>
+
+void* funcion_hilo(void* arg) {
+    int id = *(int*)arg;
+    printf("Hola desde el hilo %d\n", id);
+    return NULL;
+}
+
+int main() {
+    pthread_t hilo;
+    int id = 1;
+    
+    pthread_create(&hilo, NULL, funcion_hilo, &id);
+    pthread_join(hilo, NULL);
+    return 0;
+}
+pthread_join
+Espera a que un hilo termine su ejecución.
+
+c
+Copy
+int pthread_join(pthread_t thread, void **retval);
+Ejemplo:
+
+c
+Copy
+#include <pthread.h>
+#include <stdio.h>
+
+void* tarea_hilo(void* arg) {
+    printf("Realizando tarea...\n");
+    sleep(2); // Simula trabajo
+    int* resultado = malloc(sizeof(int));
+    *resultado = 42;
+    return resultado;
+}
+
+int main() {
+    pthread_t hilo;
+    void* retorno;
+    
+    pthread_create(&hilo, NULL, tarea_hilo, NULL);
+    pthread_join(hilo, &retorno);
+    
+    printf("Resultado del hilo: %d\n", *(int*)retorno);
+    free(retorno);
+    return 0;
+}
+Funciones de Mutex (Exclusión Mutua)
+pthread_mutex_init
+Inicializa un mutex.
+
+c
+Copy
+int pthread_mutex_init(pthread_mutex_t *mutex,
+                       const pthread_mutexattr_t *attr);
+pthread_mutex_lock
+Bloquea un mutex (espera si ya está bloqueado).
+
+c
+Copy
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+pthread_mutex_unlock
+Desbloquea un mutex.
+
+c
+Copy
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+pthread_mutex_destroy
+Destruye un mutex.
+
+c
+Copy
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+Ejemplo completo de uso de mutex:
+
+c
+Copy
+#include <pthread.h>
+#include <stdio.h>
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+int contador = 0;
+
+void* incrementar(void* arg) {
+    for(int i = 0; i < 100000; i++) {
+        pthread_mutex_lock(&mutex);
+        contador++;
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t hilo1, hilo2;
+    
+    pthread_create(&hilo1, NULL, incrementar, NULL);
+    pthread_create(&hilo2, NULL, incrementar, NULL);
+    
+    pthread_join(hilo1, NULL);
+    pthread_join(hilo2, NULL);
+    
+    printf("Contador final: %d\n", contador);
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+Funciones de Variables de Condición
+pthread_cond_init
+Inicializa una variable de condición.
+
+c
+Copy
+int pthread_cond_init(pthread_cond_t *cond,
+                      const pthread_condattr_t *attr);
+pthread_cond_wait
+Espera a que se cumpla una condición (libera el mutex mientras espera).
+
+c
+Copy
+int pthread_cond_wait(pthread_cond_t *cond,
+                      pthread_mutex_t *mutex);
+pthread_cond_timedwait
+Versión con tiempo límite de pthread_cond_wait.
+
+c
+Copy
+int pthread_cond_timedwait(pthread_cond_t *cond,
+                           pthread_mutex_t *mutex,
+                           const struct timespec *abstime);
+pthread_cond_broadcast
+Notifica a todos los hilos esperando en una variable de condición.
+
+c
+Copy
+int pthread_cond_broadcast(pthread_cond_t *cond);
+pthread_cond_destroy
+Destruye una variable de condición.
+
+c
+Copy
+int pthread_cond_destroy(pthread_cond_t *cond);
+Ejemplo de productor-consumidor usando variables de condición:
+
+c
+Copy
+#include <pthread.h>
+#include <stdio.h>
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+int buffer = 0;
+int datos_disponibles = 0;
+
+void* productor(void* arg) {
+    for(int i = 0; i < 5; i++) {
+        pthread_mutex_lock(&mutex);
+        buffer = i+1;
+        datos_disponibles = 1;
+        printf("Producido: %d\n", i+1);
+        pthread_cond_signal(&cond);
+        pthread_mutex_unlock(&mutex);
+        usleep(100000); // 0.1 segundos
+    }
+    return NULL;
+}
+
+void* consumidor(void* arg) {
+    for(int i = 0; i < 5; i++) {
+        pthread_mutex_lock(&mutex);
+        while(!datos_disponibles) {
+            pthread_cond_wait(&cond, &mutex);
+        }
+        printf("Consumido: %d\n", buffer);
+        datos_disponibles = 0;
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t prod, cons;
+    
+    pthread_create(&prod, NULL, productor, NULL);
+    pthread_create(&cons, NULL, consumidor, NULL);
+    
+    pthread_join(prod, NULL);
+    pthread_join(cons, NULL);
+    
+    pthread_cond_destroy(&cond);
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+Funciones de Tiempo y Entrada/Salida
+gettimeofday
+Obtiene la fecha y hora actuales.
+
+c
+Copy
+int gettimeofday(struct timeval *tv, struct timezone *tz);
+Ejemplo:
+
+c
+Copy
+#include <sys/time.h>
+#include <stdio.h>
+
+int main() {
+    struct timeval tiempo;
+    gettimeofday(&tiempo, NULL);
+    printf("Segundos: %ld\nMicrosegundos: %ld\n", 
+           tiempo.tv_sec, tiempo.tv_usec);
+    return 0;
+}
+usleep
+Duerme durante microsegundos.
+
+c
+Copy
+int usleep(useconds_t usec);
+Ejemplo:
+
+c
+Copy
+#include <unistd.h>
+#include <stdio.h>
+
+int main() {
+    printf("Inicio\n");
+    usleep(2000000); // Duerme 2 segundos
+    printf("Pasaron 2 segundos\n");
+    return 0;
+}
+write
+Escribe datos a un descriptor de archivo.
+
+c
+Copy
+ssize_t write(int fd, const void *buf, size_t count);
+Ejemplo:
+
+c
+Copy
+#include <unistd.h>
+#include <string.h>
+
+int main() {
+    char mensaje[] = "Hola Mundo\n";
+    write(STDOUT_FILENO, mensaje, strlen(mensaje));
+    return 0;
+}
+Funciones de Gestión de Memoria
+malloc
+Asigna memoria dinámica.
+
+c
+Copy
+void *malloc(size_t size);
+free
+Libera memoria asignada previamente con malloc.
+
+c
+Copy
+void free(void *ptr);
+Ejemplo:
+
+c
+Copy
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+    int* arreglo = (int*)malloc(5 * sizeof(int));
+    
+    if(arreglo != NULL) {
+        for(int i = 0; i < 5; i++) {
+            arreglo[i] = i * 2;
+            printf("%d ", arreglo[i]);
+        }
+        printf("\n");
+        free(arreglo);
+    }
+    return 0;
+}
+Funciones de Impresión y Conversión
+printf
+Imprime salida formateada a stdout.
+
+c
+Copy
+int printf(const char *format, ...);
+fprintf
+Imprime salida formateada a un stream específico.
+
+c
+Copy
+int fprintf(FILE *stream, const char *format, ...);
+Ejemplo:
+
+c
+Copy
+#include <stdio.h>
+
+int main() {
+    printf("Mensaje a pantalla\n");
+    fprintf(stderr, "Mensaje a errores\n");
+    return 0;
+}
+strcmp
+Compara dos cadenas.
+
+c
+Copy
+int strcmp(const char *s1, const char *s2);
+Ejemplo:
+
+c
+Copy
+#include <string.h>
+#include <stdio.h>
+
+int main() {
+    char str1[] = "hola";
+    char str2[] = "hola";
+    char str3[] = "adios";
+    
+    if(strcmp(str1, str2) == 0) {
+        printf("str1 y str2 son iguales\n");
+    }
+    
+    if(strcmp(str1, str3) < 0) {
+        printf("str1 va antes que str3 alfabéticamente\n");
+    }
+    return 0;
+}
+strlen
+Devuelve la longitud de una cadena.
+
+c
+Copy
+size_t strlen(const char *s);
+Ejemplo:
+
+c
+Copy
+#include <string.h>
+#include <stdio.h>
+
+int main() {
+    char texto[] = "Programación";
+    printf("Longitud de '%s': %zu\n", texto, strlen(texto));
+    return 0;
+}
+atoi
+Convierte una cadena a entero.
+
+c
+Copy
+int atoi(const char *nptr);
+Ejemplo:
+
+c
+Copy
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+    char numero_str[] = "12345";
+    int numero = atoi(numero_str);
+    printf("Número convertido: %d\n", numero + 10);
+    return 0;
+}
+memset
+Rellena un bloque de memoria con un valor específico.
+
+c
+Copy
+void *memset(void *s, int c, size_t n);
+Ejemplo:
+
+c
+Copy
+#include <string.h>
+#include <stdio.h>
+
+int main() {
+    char buffer[20];
+    memset(buffer, 0, sizeof(buffer)); // Rellenar con ceros
+    strcpy(buffer, "Texto");
+    printf("Buffer: %s\n", buffer);
+    return 0;
+}
+Estas funciones te permitirán implementar programas concurrentes robustos en C usando hilos POSIX. Recuerda siempre inicializar y destruir recursos como mutexes y variables de condición para evitar fugas de memoria o comportamientos indefinidos.
 
 
 

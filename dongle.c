@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,22 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CODEXION_H
-# define CODEXION_H
+#include "coders/codexion.h"
 
-// Librerías
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <pthread.h>
-# include <sys/time.h>
-# include <stdbool.h>
 
-// Headers internos
-# include "parser.h"
-# include "dongle.h"
-# include "coder.h"
-# include "utils.h"
+void    init_dongles(t_dongle *dongle, int count)
+{
+    int i;
 
-#endif
+    i = 0;
+    while (i < count)
+    {
+        dongle[i].id = i;
+        dongle[i].coder_id = i;
+        dongle[i].taken = false;
+        gettimeofday(&dongle[i].available_at, NULL);
+        pthread_mutex_init(&dongle[i].mutex, NULL);
+        pthread_cond_init(&dongle[i].cond, NULL);
+        i++;
+    }
+}
+
+t_dongle *create_and_init_dongles(int count, t_context *ctx)
+{
+    t_dongle *dongles;
+
+    dongles = safe_malloc(sizeof(t_dongle) * count, ctx);
+    init_dongles(dongles, count);
+    return (dongles);
+}
