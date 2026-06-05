@@ -62,7 +62,12 @@ void *coder_executed(void *arg)
 		usleep(self->config->time_to_refactor * 1000);		//lo cmabios de milisegundos a microsegundos
 		printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
 		// printf("%d", usleep(self->config->time_to_refactor * 1000));
-		
+
+		while (get_current_time_ms() < self->left_dongle->available_at_ms)
+			usleep(100);
+		while (get_current_time_ms() < self->right_dongle->available_at_ms)
+			usleep(100);
+
 		//COGER DONGLES
 		pthread_mutex_lock(&self->left_dongle->mutex);
 		self->left_dongle->taken = true;	//luego eliminar y de la lista
@@ -75,12 +80,15 @@ void *coder_executed(void *arg)
 		usleep(self->config->time_to_compile * 1000);
 		
 		//TERMINAR Y SOLTAR DOONGLES
-		printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
 		pthread_mutex_unlock(&self->left_dongle->mutex);
 		self->left_dongle->taken = false;
 		pthread_mutex_unlock(&self->right_dongle->mutex);
 		self->right_dongle->taken = false;
-		
+		//el cooldown le amrcamos cuando estará disponible d enuevo
+		self->left_dongle->available_at_ms = get_current_time_ms() + self->config->dongle_cooldown;
+		self->right_dongle->available_at_ms = get_current_time_ms() + self->config->dongle_cooldown;
+		printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
+
 		self->compile_count++;
 	}
 	return NULL;
