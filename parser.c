@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Updated: 2026/06/05 15:57:24 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

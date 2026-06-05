@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/05 14:14:32 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/06/05 17:03:36 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ int	main(int argc, char **argv)
 		free_context(&ctx);
 		exit(1);
 	}
-	// printf("--- Configuración cargada ---\n");
+	printf("--- Configuración cargada ---\n");
 	// printf(" - Número de programadores: %d\n", config.number_of_coders);
-	// printf(" - Tiempo para quemarse (ms): %d\n", config.time_to_burnout);
+	printf(" - Tiempo para quemarse (ms): %d\n", config.time_to_burnout);
 	// printf(" - Tiempo de compilación (ms): %d\n", config.time_to_compile);
-	// printf(" - Tiempo de depuración (ms): %d\n", config.time_to_debug);
+	printf(" - Tiempo de depuración (ms): %d\n", config.time_to_debug);
 	// printf(" - Tiempo de refactorización (ms): %d\n", config.time_to_refactor);
 	// printf(" - Compilaciones requeridas: %d\n", config.number_of_compiles_required);
-	// printf(" - Tiempo de cooldown de dongle (ms): %d\n", config.dongle_cooldown);
-	// printf(" - Planificador (scheduler): %s\n", config.scheduler);
-	// printf("--------------------------------\n");
+	printf(" - Tiempo de cooldown de dongle (ms): %d\n", config.dongle_cooldown);
+	printf(" - Planificador (scheduler): %s\n", config.scheduler);
+	printf("--------------------------------\n");
 
 
 	// ctx.dongles = safe_malloc(sizeof(t_dongle) * config.number_of_coders, &ctx);

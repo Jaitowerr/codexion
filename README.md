@@ -164,3 +164,94 @@ TEMPORIZADOR DE VIDA: [||||||||||] (Máximo: time_to_burnout)
 
 valgrind ./codexion 4 500 200 200 200 2 100 fifo
 
+
+
+void *coder_executed(void *arg)
+{
+	t_coder *self;
+	
+	self = (t_coder *)arg;	//casteo porque recibe void, no sabe que es por lo tanto casteo y debe ir bien, no se si poner un if con la funcion free
+
+	while(self->compile_count < self->config->number_of_compiles_required)
+	{
+		// printf("COMPILE COUNT: %i\n", self->compile_count);
+		printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
+		
+		//REFACTORIZAR
+		printf(" - REFACTORIZANDO\n");
+		usleep(self->config->time_to_refactor * 1000);		//lo cmabios de milisegundos a microsegundos  y duerme un hilo, significa que deja de consumir cpu ese hilo, El sistema operativo lo pone en pausa, Pasado el tiempo, el hilo se reanuda
+		// printf("%d", usleep(self->config->time_to_refactor * 1000));
+
+		//COGER DONGLES
+		printf("  - COGER DONGLES\n");
+
+		//COMPILAR
+		printf("   - COMPILAR\n");
+
+		//TERMINAR Y SOLTAR DOONGLES
+		printf("    - TERMINAR Y SOLTAR DONGLE\n");
+	
+		self->compile_count++;
+	
+	}
+	
+	return NULL;
+	
+}
+primera parte  		//REFACTORIZAR
+prueba:
+printf("Voy a dormir 1 segundo...\n");
+usleep(1000000); // 1.000.000 µs = 1 segundo
+printf("¡He despertado!\n");
+
+SEGUNDA PARTE  //COGER DONGLES
+El programador necesita coger sus dos dongles (izquierdo y derecho)
+¿Qué pasa si otro programador ya tiene uno de esos dongles?
+
+Aquí es donde entra el mutex.
+RouteLLM
+Routing to Claude Sonnet 4.6
+¡Exacto! Aquí es donde entra la parte más importante del proyecto. Vamos paso a paso.
+
+✅ ¿Qué debe hacer el programador aquí?
+El programador necesita coger sus dos dongles (izquierdo y derecho) para poder compilar.
+
+Pero hay un problema:
+
+¿Qué pasa si otro programador ya tiene uno de esos dongles?
+
+Aquí es donde entra el mutex.
+
+🧠 ¿Qué es un mutex? (Explicación para tontos)
+Imagina que tienes una llave de un baño.
+
+Si alguien está dentro, la llave está cogida y debes esperar.
+Cuando sale, devuelve la llave y tú puedes entrar.
+Un mutex funciona igual:
+
+pthread_mutex_lock → Coger la llave (si alguien la tiene, esperas)
+pthread_mutex_unlock → Devolver la llave
+por eso hacemos
+pthread_mutex_lock(&self->left_dongle->mutex);   // Espera si está ocupado
+pthread_mutex_lock(&self->right_dongle->mutex);  // Espera si está ocupado
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/05 13:59:48 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/06/05 17:36:28 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,30 +53,37 @@ void *coder_executed(void *arg)
 	t_coder *self;
 	
 	self = (t_coder *)arg;	//casteo porque recibe void, no sabe que es por lo tanto casteo y debe ir bien, no se si poner un if con la funcion free
-
 	while(self->compile_count < self->config->number_of_compiles_required)
 	{
-		printf("COMPILE COUNT: %i\n", self->compile_count);
-		printf("PROGRAMADOR : %i\n", self->id);
+		// printf("COMPILE COUNT: %i\n", self->compile_count);
+		printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
 		
 		//REFACTORIZAR
-		printf(" - REFACTORIZANDO\n");
-
+		usleep(self->config->time_to_refactor * 1000);		//lo cmabios de milisegundos a microsegundos
+		printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
+		// printf("%d", usleep(self->config->time_to_refactor * 1000));
+		
 		//COGER DONGLES
-		printf("  - COGER DONGLES\n");
-
+		pthread_mutex_lock(&self->left_dongle->mutex);
+		self->left_dongle->taken = true;	//luego eliminar y de la lista
+		pthread_mutex_lock(&self->right_dongle->mutex);
+		self->right_dongle->taken = true;
+		printf("  - COGER DONGLES programador ID-%i\n", self->id);
+		
 		//COMPILAR
-		printf("   - COMPILAR\n");
-
+		printf("   - COMPILAR programador ID-%i\n", self->id);
+		usleep(self->config->time_to_compile * 1000);
+		
 		//TERMINAR Y SOLTAR DOONGLES
-		printf("    - TERMINAR Y SOLTAR DONGLE\n");
-	
+		printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
+		pthread_mutex_unlock(&self->left_dongle->mutex);
+		self->left_dongle->taken = false;
+		pthread_mutex_unlock(&self->right_dongle->mutex);
+		self->right_dongle->taken = false;
+		
 		self->compile_count++;
-	
 	}
-	
 	return NULL;
-	
 }
 
 
