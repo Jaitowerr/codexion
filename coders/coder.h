@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   coder.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Updated: 2026/06/05 13:10:08 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ typedef struct s_coder
 	t_config		*config;		// acceso a a todos lso tiempos y aprámetros globales
 	// struct s_coder *next;
 	// struct s_coder *prev;
-}					t_coder;
+}	t_coder;
 
 t_coder *create_and_init_coders(int count, t_dongle *dongles, t_config *config, struct s_context *ctx);
 
 void	init_coders(t_coder *coders, t_dongle *dongles, int count, t_config *config);
 
 void *coder_routine(void *arg);
+
+void *coder_executed(void *arg);
 
 #endif

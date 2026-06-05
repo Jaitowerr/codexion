@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Updated: 2026/06/05 13:08:03 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void create_threads(t_context *ctx)
     i = 0;
     while (i < ctx->config->number_of_coders)
     {
-        pthread_create(&ctx->threads[i], NULL, coder_routine, &ctx->coders[i]); //Crea un nuevo hilo de ejecución. &ctx->threads[i] → Donde se guarda el ID del hilo (para luego hacer join) NULL → Atributos por defecto coder_routine → La función que ejecutará el hilo &ctx->coders[i] → El argumento que le pasamos (el programador)
+        pthread_create(&ctx->threads[i], NULL, coder_executed, &ctx->coders[i]); //Crea un nuevo hilo de ejecución. &ctx->threads[i] → Donde se guarda el ID del hilo (para luego hacer join) NULL → Atributos por defecto coder_routine → La función que ejecutará el hilo &ctx->coders[i] → El argumento que le pasamos (el programador)
         i++;
     }
 

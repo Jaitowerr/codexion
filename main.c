@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Updated: 2026/06/05 14:14:32 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,14 @@ int	main(int argc, char **argv)
 	t_context 	ctx;
 	t_config	config;
 
+	
+	init_context(&ctx);
 
 	if (!parse_arguments(argc, argv, &config))
+	{
+		free_context(&ctx);
 		exit(1);
+	}
 	// printf("--- Configuración cargada ---\n");
 	// printf(" - Número de programadores: %d\n", config.number_of_coders);
 	// printf(" - Tiempo para quemarse (ms): %d\n", config.time_to_burnout);
@@ -31,7 +36,6 @@ int	main(int argc, char **argv)
 	// printf(" - Planificador (scheduler): %s\n", config.scheduler);
 	// printf("--------------------------------\n");
 
-	init_context(&ctx);
 
 	// ctx.dongles = safe_malloc(sizeof(t_dongle) * config.number_of_coders, &ctx);
     // ctx.coders = safe_malloc(sizeof(t_coder) * config.number_of_coders, &ctx);

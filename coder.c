@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   coder.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Updated: 2026/06/05 13:59:48 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,75 @@ t_coder *create_and_init_coders(int count, t_dongle *dongles, t_config *config, 
 
 void *coder_routine(void *arg)
 {
-    t_coder *self = (t_coder *)arg;
+	t_coder *self;
+
+    self = (t_coder *)arg;
     printf("Programador %d: ¡Listo!!! A quemar CPU!!\n", self->id);
     return NULL;
 }
+
+void *coder_executed(void *arg)
+{
+	t_coder *self;
+	
+	self = (t_coder *)arg;	//casteo porque recibe void, no sabe que es por lo tanto casteo y debe ir bien, no se si poner un if con la funcion free
+
+	while(self->compile_count < self->config->number_of_compiles_required)
+	{
+		printf("COMPILE COUNT: %i\n", self->compile_count);
+		printf("PROGRAMADOR : %i\n", self->id);
+		
+		//REFACTORIZAR
+		printf(" - REFACTORIZANDO\n");
+
+		//COGER DONGLES
+		printf("  - COGER DONGLES\n");
+
+		//COMPILAR
+		printf("   - COMPILAR\n");
+
+		//TERMINAR Y SOLTAR DOONGLES
+		printf("    - TERMINAR Y SOLTAR DONGLE\n");
+	
+		self->compile_count++;
+	
+	}
+	
+	return NULL;
+	
+}
+
+
+// void *coder_executed(void *arg)
+// {
+//     t_coder *self;
+
+//     self = (t_coder *)arg;
+    
+//     // Mientras no haya llegado al número de compilaciones necesarias...
+//     while (self->compile_count < self->config->number_of_compiles_required)
+//     {
+//         // 1. Pensar/Refactorizar (Tardar un tiempo)
+//         printf("Programador %d: Estoy pensando/refactorizando...\n", self->id);
+//         usleep(self->config->time_to_refactor * 1000); // usleep usa microsegundos, multiplicamos por 1000 para milisegundos
+
+//         // 2. Intentar coger dongles (Aquí es donde usaremos Mutex más adelante)
+//         printf("Programador %d: Intentando coger dongles...\n", self->id);
+        
+//         // 3. Compilar
+//         printf("Programador %d: Comienza la compilación %d...\n", self->id, self->compile_count + 1);
+//         usleep(self->config->time_to_compile * 1000);
+        
+//         // 4. Terminar compilación y soltar dongles
+//         self->compile_count++;
+//         printf("Programador %d: ¡Compilación %d terminada! Suelto dongles.\n", self->id, self->compile_count);
+//     }
+    
+//     printf("Programador %d: He terminado todas mis tareas. ¡Me voy a casa!\n", self->id);
+//     return (NULL);
+// }
+
+
 
 // void create(t_coder  *coders)
 // {
