@@ -23,7 +23,8 @@ void    init_dongles(t_dongle *dongle, int count)
         dongle[i].id = i + 1;
         dongle[i].coder_id = i + 1;
         dongle[i].taken = false;
-        gettimeofday(&dongle[i].available_at, NULL);
+        dongle[i].available_at_ms = 0;
+        // gettimeofday(&dongle[i].available_at_ms, NULL);
         pthread_mutex_init(&dongle[i].mutex, NULL);
         pthread_cond_init(&dongle[i].cond, NULL);
         i++;

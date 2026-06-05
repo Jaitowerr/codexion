@@ -20,7 +20,7 @@ typedef struct s_dongle
 	int             id;	//identificador mismo que coder
 	int             coder_id;	// el id del coder al que pertenece
 	bool            taken;	//si está siendo usado o no
-	struct timeval	available_at;	//fecha/hora en el qiue estará disponible  dongle_cooldown
+	long			available_at_ms;	//fecha/hora en el qiue estará disponible  dongle_cooldown
 	pthread_mutex_t	mutex;	//sirve para proteger acceso porque varios programadores pueden intentar cogerlo a la vez
 	pthread_cond_t	cond;	//sirve para avisar a los hilos que esperana que esté libre
 	// struct s_dongle *next;

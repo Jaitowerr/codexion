@@ -236,8 +236,15 @@ pthread_mutex_lock(&self->left_dongle->mutex);   // Espera si está ocupado
 pthread_mutex_lock(&self->right_dongle->mutex);  // Espera si está ocupado
 
 
-
-
+vale, ahora incrementamos con el COOLDOWN
+despues de usar un dongle, hay que esperar un tiempo de enfriamiento
+como lo sincronizamos
+    1. Programador suelta el dongle
+    2. Guardamos en available_at = ahora + dongle_cooldown
+    3. Cuando otro programador intenta cogerlo...
+    4. Comprueba si ahora >= available_at
+    5. Si no → espera
+    6. Si sí → lo coge
 
 
 

@@ -21,6 +21,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <stdbool.h>
+# include <timer.h>
 
 // Headers internos
 # include "parser.h"
