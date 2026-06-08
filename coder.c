@@ -51,6 +51,18 @@ void *coder_routine(void *arg)
 void *coder_executed(void *arg)
 {
 	t_coder *self;
+
+    self = (t_coder *)arg;
+	while (arg)
+	{
+		printf("%s\n","Holacracola");
+		printf("%d\n", self->id);
+	}
+	return NULL;
+}
+void *coder_executed(void *arg)
+{
+	t_coder *self;
 	
 	self = (t_coder *)arg;	//casteo porque recibe void, no sabe que es por lo tanto casteo y debe ir bien, no se si poner un if con la funcion free
 	while(self->compile_count < self->config->number_of_compiles_required)
@@ -70,10 +82,12 @@ void *coder_executed(void *arg)
 
 		//COGER DONGLES
 		pthread_mutex_lock(&self->left_dongle->mutex);
+		if dongle is disppoonible
+			
 		self->left_dongle->taken = true;	//luego eliminar y de la lista
 		pthread_mutex_lock(&self->right_dongle->mutex);
 		self->right_dongle->taken = true;
-		printf("  - COGER DONGLES programador ID-%i\n", self->id);
+		printf("  - COGER DONGLES programador ID-%i izq %i dr %i\n", self->id, self->left_dongle->id, self->right_dongle->id);
 		
 		//COMPILAR
 		printf("   - COMPILAR programador ID-%i\n", self->id);
