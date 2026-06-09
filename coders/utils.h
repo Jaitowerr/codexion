@@ -20,11 +20,12 @@
 /* Contexto: guarda punteros a todo lo que reservemos */
 typedef struct s_context
 {
-    t_config    *config;
-    t_dongle    *dongles;
-    t_coder     *coders;
-    pthread_t  *threads;    //pthread_t es un tipo especial de variable que identifica a cada hilo.
-    
+    t_config    	*config;
+    t_dongle    	*dongles;
+    t_coder     	*coders;
+    pthread_t  		*threads;    //pthread_t es un tipo especial de variable que identifica a cada hilo.
+    bool			someone_burned;
+	pthread_mutex_t burnout_mutex;
 } t_context;
 
 /* Inicializa el contexto a NULL */

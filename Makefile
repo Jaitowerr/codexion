@@ -1,13 +1,15 @@
 NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
-SRC = main.c parser.c dongle.c coder.c utils.c thread.c timer.c
+SRC = main.c parser.c dongle.c coder.c utils.c thread.c timer.c coder_routine.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+	$(MAKE) clean
+	
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I./coders -c $< -o $@

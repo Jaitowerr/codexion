@@ -209,8 +209,7 @@ El programador necesita coger sus dos dongles (izquierdo y derecho)
 ¿Qué pasa si otro programador ya tiene uno de esos dongles?
 
 Aquí es donde entra el mutex.
-RouteLLM
-Routing to Claude Sonnet 4.6
+
 ¡Exacto! Aquí es donde entra la parte más importante del proyecto. Vamos paso a paso.
 
 ✅ ¿Qué debe hacer el programador aquí?
@@ -249,14 +248,57 @@ como lo sincronizamos
 
 
 
+EJECUCIÓN:
+
+1	El programador quiere compilar.
+2	Para compilar necesita dos dongles.
+3	Cuando consigue los dos dongles:
+    -	imprime que ha cogido dongle izquierdo
+    -	imprime que ha cogido dongle derecho
+    -	imprime que está compilando
+    -	duerme time_to_compile
+4	Suelta los dongles.
+5	Depura durante time_to_debug.
+6	Refactoriza durante time_to_refactor.
+7	Vuelve a intentar compilar.
+
+IMPORTANTE:
+Entonces si el programador 1 tiene los dongles y está compilando, el programador 2 puede estar:
+
+  1 esperando dongles
+  2 depurando
+  3 refactorizando
+
+Lo único que NO puede hacer es compilar sin tener los dos dongles.
+
+
+RESUMEN DE QUE HACE CADA COSA
+usleep    // Pausa la ejecución el número de microsegundos indicado. RECIBE MICROSEGUNDOS
+gettimeofday  // Mira el reloj ahora mismo y dime la hora en milisegundos. Si no recibe parámetro rellena tv con la hora actual real del ordenador.
 
 
 
 
 
+1. ⚒️ COMPILAR (Compiling)
+- ¿Qué es? Es cuando envías tu código al servidor para que se convierta en un programa.
+- Duración: time_to_compile.
+
+2. 🐞 DEPURAR (Debugging)
+- ¿Qué es? Una vez que has compilado, miras si hay fallos (bugs). Estás leyendo la pantalla y pensando.
+- ¿Necesitas dongles? NO. Ya has compilado, ahora solo estás mirando el resultado.
+- Duración: time_to_debug.
+
+
+3. 📝 REFACTORIZAR (Refactoring)
+- ¿Qué es? Has visto los fallos y ahora estás reescribiendo el código para que sea mejor y más limpio. Estás escribiendo en tu teclado.
+- ¿Necesitas dongles? NO. Estás escribiendo en local en tu ordenador. No necesitas enviarlo a ningún sitio todavía.
+- Duración: time_to_refactor.
 
 
 
+
+Qué es el Burnout en este proyecto???
 
 
 

@@ -18,6 +18,8 @@ void init_context(t_context *ctx)
     ctx->dongles = NULL;
     ctx->coders = NULL;
     ctx->threads = NULL;
+	ctx->someone_burned = false;
+
 }
 
 void *safe_malloc(size_t size, t_context *ctx)
