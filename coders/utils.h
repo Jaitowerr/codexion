@@ -26,6 +26,7 @@ typedef struct s_context
     pthread_t  		*threads;    //pthread_t es un tipo especial de variable que identifica a cada hilo.
     bool			someone_burned;
 	pthread_mutex_t burnout_mutex;
+	pthread_t 		monitor_thread;	///hilo para el burnout
 } t_context;
 
 /* Inicializa el contexto a NULL */
