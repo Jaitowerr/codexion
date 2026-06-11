@@ -30,6 +30,8 @@ typedef struct s_coder
 	// struct s_coder *next;
 	// struct s_coder *prev;
 	t_context   	*ctx;
+	long long 		request_ms;			//cuándo empezó a esperar dongles
+	long long		last_compile_start_ms;//cuándo empezó su última compilación real
 }	t_coder;
 
 t_coder *create_and_init_coders(int count, t_dongle *dongles, t_config *config, t_context *ctx);

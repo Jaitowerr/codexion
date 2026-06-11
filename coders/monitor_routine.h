@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor_thread.h                                   :+:      :+:    :+:   */
+/*   monitor_routine.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MONITOR_THREAD
-# define MONITOR_THREAD
+#ifndef MONITOR_ROUTINE
+# define MONITOR_ROUTINE
 
-pthread_t monitor_thread;
-
-void *monitor_routine(void *arg)
+void *monitor_routine(void *arg);
 
 #endif
