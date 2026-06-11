@@ -45,6 +45,7 @@ void *monitor_routine(void *arg)
 			{
 				pthread_mutex_lock(&ctx->burnout_mutex);
 				ctx->someone_burned = true;
+				log_status(arg, "DIEEEEEEDDDDDDDD!!!!!!!!!!!");
 				printf("                         monitor_routine   ***************BURNOUT programador ID-%i\n", ctx->coders[i].id);
 				pthread_mutex_unlock(&ctx->burnout_mutex);
 				

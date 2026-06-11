@@ -64,6 +64,7 @@ bool	do_debug(t_coder *self)
 {
 	printf(" - DEBUGGING programador ID-%i\n", self->id);
 	usleep(self->config->time_to_debug * 1000);
+    log_status(self, "is debugging");
 	return (check_burnout(self));
 }
 
@@ -72,5 +73,6 @@ bool	do_refactor(t_coder *self)
 	//REFACTORIZAR
 	printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
 	usleep(self->config->time_to_refactor * 1000);
+    log_status(self, "is refactoring");
 	return (check_burnout(self));
 }

@@ -20,7 +20,7 @@ void init_context(t_context *ctx)
     ctx->threads = NULL;
 	ctx->someone_burned = false;
     pthread_mutex_init(&ctx->burnout_mutex, NULL);
-    ctx->start_time = get_current_time_ms();
+    // ctx->start_time = get_current_time_ms();
     pthread_mutex_init(&ctx->log_mutex, NULL);
 
 }
@@ -62,6 +62,7 @@ void free_context(t_context *ctx)
         ctx->threads = NULL;
     }
     pthread_mutex_destroy(&ctx->burnout_mutex);
+    pthread_mutex_destroy(&ctx->log_mutex);
 }
 
 
@@ -79,17 +80,39 @@ void free_context(t_context *ctx)
 // 	}
 // }
 
-void log_status(t_coder *self, const char *status)
-{
-	long long current_time;
+// void log_status(t_coder *self, const char *status)
+// {
+// 	long long current_time;
 
-    pthread_mutex_lock(&self->ctx->log_mutex);
-	if (self->ctx->someone_burned)
+//     pthread_mutex_lock(&self->ctx->log_mutex);
+// 	if (self->ctx->someone_burned)
+// 	{
+// 		pthread_mutex_unlock(&self->ctx->log_mutex);
+// 		return;
+// 	}
+// 	current_time = get_current_time_ms() - self->ctx->start_time;
+// 	printf("%lld %d %s\n", current_time, self->id, status);
+// 	pthread_mutex_unlock(&self->ctx->log_mutex);
+// }
+
+void	log_status(t_coder *self, const char *status)
+{
+	t_context	*ctx;
+	long long	timestamp;
+
+	ctx = self->ctx;
+	// 1. Bloqueamos en el orden jerárquico establecido
+	pthread_mutex_lock(&ctx->log_mutex);
+	pthread_mutex_lock(&ctx->burnout_mutex);
+	
+	// 2. Solo imprimimos si nadie se ha quemado todavía
+	if (!ctx->someone_burned)
 	{
-		pthread_mutex_unlock(&self->ctx->log_mutex);
-		return;
+		timestamp = get_current_time_ms() - ctx->start_time;
+		printf("%lld %d %s\n", timestamp, self->id, status);
 	}
-	current_time = get_current_time_ms() - self->ctx->start_time;
-	printf("%lld %d %s\n", current_time, self->id, status);
-	pthread_mutex_unlock(&self->ctx->log_mutex);
+	
+	// 3. Desbloqueamos en orden inverso
+	pthread_mutex_unlock(&ctx->burnout_mutex);
+	pthread_mutex_unlock(&ctx->log_mutex);
 }

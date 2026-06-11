@@ -163,6 +163,7 @@ bool	compile(t_coder *self)
 	//COMPILAR
 	printf("   - COMPILAR programador ID-%i\n", self->id);
 	usleep(self->config->time_to_compile * 1000);
+    log_status(self, "is compiling");
 	if (check_burnout(self))
 	{
 		// Soltar dongles porque los tenemos cogidos
