@@ -27,6 +27,9 @@ typedef struct s_context
     bool			someone_burned;
 	pthread_mutex_t burnout_mutex;
 	pthread_t 		monitor_thread;	///hilo para el burnout
+
+    long long       start_time;
+
 } t_context;
 
 /* Inicializa el contexto a NULL */
@@ -38,7 +41,9 @@ void free_context(t_context *ctx);
 /* malloc seguro: si falla, libera y sale */
 void *safe_malloc(size_t size, t_context *ctx);
 
-void	print_summary(t_context *ctx);
+// void	print_summary(t_context *ctx);
+
+void    log_status(t_coder *self, const char *status);
 
 
-#endif /* UTILS_H */
+#endif

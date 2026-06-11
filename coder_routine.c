@@ -32,7 +32,8 @@ bool check_burnout(t_coder *self)
 	if (get_current_time_ms() - self->last_compile_ms > self->config->time_to_burnout)
 	{
 		self->ctx->someone_burned = true;
-		printf("***************BURNOUT programador ID-%i\n", self->id);
+		log_status(self, "burned out");
+		// printf("***************BURNOUT programador ID-%i\n", self->id);
 		pthread_mutex_unlock(&self->ctx->burnout_mutex);
 		return (true);
 	}
@@ -57,22 +58,26 @@ bool	take_dongles(t_coder *self)
 	pthread_mutex_lock(&self->right_dongle->mutex);
 								// if dongle is disppoonible
 	self->left_dongle->taken = true;		//luego eliminar y de la lista
+	log_status(self, "has taken a dongle");
 	self->right_dongle->taken = true;
+	log_status(self, "has taken a dongle");
+
 	if (check_burnout(self))
 	{
 		// Soltar dongles porque los tenemos cogidos
 		return (unlock_dongle_mutex(self));
 	}
-	printf("  - COGER DONGLES programador ID-%i izq %i dr %i\n",
-		self->id, self->left_dongle->id, self->right_dongle->id);
+	// printf("  - COGER DONGLES programador ID-%i izq %i dr %i\n", self->id, self->left_dongle->id, self->right_dongle->id);
 	return (false);
 }
 
 bool	compile(t_coder *self)
 {
 	//COMPILAR
-	printf("   - COMPILAR programador ID-%i\n", self->id);
+	// printf("   - COMPILAR programador ID-%i\n", self->id);
 	usleep(self->config->time_to_compile * 1000);
+	log_status(self, "is compiling");
+
 	if (check_burnout(self))
 	{
 		// Soltar dongles porque los tenemos cogidos

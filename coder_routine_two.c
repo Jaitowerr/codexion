@@ -29,22 +29,24 @@ bool	release_and_cooldown(t_coder *self)
 	self->right_dongle->taken = false;
 	pthread_mutex_unlock(&self->right_dongle->mutex);
 
-	printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
+	// printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
 	self->compile_count++;
 	return (false);
 }
 
 bool	do_debug(t_coder *self)
 {
-	printf(" - DEBUGGING programador ID-%i\n", self->id);
+	// printf(" - DEBUGGING programador ID-%i\n", self->id);
 	usleep(self->config->time_to_debug * 1000);
+    log_status(self, "is debugging");
 	return (check_burnout(self));
 }
 
 bool	do_refactor(t_coder *self)
 {
 	//REFACTORIZAR
-	printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
+	// printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
 	usleep(self->config->time_to_refactor * 1000);
+    log_status(self, "is refactoring");
 	return (check_burnout(self));
 }

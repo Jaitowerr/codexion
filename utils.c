@@ -61,16 +61,31 @@ void free_context(t_context *ctx)
 }
 
 
-void	print_summary(t_context *ctx)
-{
-	int	i;
+// void	print_summary(t_context *ctx)
+// {
+// 	int	i;
 
-	i = 0;
-	while (i < ctx->config->number_of_coders)
+// 	i = 0;
+// 	while (i < ctx->config->number_of_coders)
+// 	{
+// 		printf("Coder[%d]:\n", ctx->coders[i].id);
+// 		printf("  Left Dongle: %d\n", ctx->coders[i].left_dongle->id);
+// 		printf("  Right Dongle: %d\n", ctx->coders[i].right_dongle->id);
+// 		i++;
+// 	}
+// }
+
+
+void	log_status(t_coder *self, const char *status)
+{
+	t_context	*ctx;
+	long long	timestamp;
+
+	ctx = self->ctx;
+	
+	if (!ctx->someone_burned)
 	{
-		printf("Coder[%d]:\n", ctx->coders[i].id);
-		printf("  Left Dongle: %d\n", ctx->coders[i].left_dongle->id);
-		printf("  Right Dongle: %d\n", ctx->coders[i].right_dongle->id);
-		i++;
+		timestamp = get_current_time_ms() - ctx->start_time;
+		printf("%lld %d %s\n", timestamp, self->id, status);
 	}
 }

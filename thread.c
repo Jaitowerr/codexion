@@ -15,6 +15,8 @@
 void create_threads(t_context *ctx)
 {
     int i;
+    
+    ctx->start_time = get_current_time_ms();
 
     ctx->threads = safe_malloc(sizeof(pthread_t) * ctx->config->number_of_coders, ctx);
 

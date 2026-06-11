@@ -49,13 +49,15 @@ void	*coder_executed(void *arg)
 	while (self->compile_count < self->config->number_of_compiles_required
 		&& !self->ctx->someone_burned)
 	{
-		printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
+		// printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
 		self->last_compile_ms = get_current_time_ms();	//guardo el tiempo porque empiezo a esperar ahora
 		if (take_dongles(self))		//coger dongle
 			return (NULL);
 		if (compile(self))			// compilar
 			return (NULL);
 		release_and_cooldown(self);	//cooldown
+		if (self->compile_count >= self->config->number_of_compiles_required)
+			break ; // o return (NULL); si quieres terminar el hilo directamente aquí
 		if (do_debug(self))			//debugear ver codigo el programador
 			return (NULL);
 		if (do_refactor(self))		//Ccorregir errores de código
