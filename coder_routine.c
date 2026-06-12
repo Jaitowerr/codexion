@@ -63,6 +63,7 @@ bool	take_dongles_fifo(t_coder *self)
 	t_dongle	*first;
 	t_dongle	*second;
 
+	// Esperar a que ambos dongles estén disponibles
 	while (get_current_time_ms() < self->left_dongle->available_at_ms
 		|| get_current_time_ms() < self->right_dongle->available_at_ms)
 	{
@@ -70,19 +71,28 @@ bool	take_dongles_fifo(t_coder *self)
 			return (true);
 		usleep(100);
 	}
+	
 	if (check_burnout(self))
 		return (true);
 
+	// Caso especial: 1 solo programador
 	if (self->left_dongle == self->right_dongle)
 	{
 		pthread_mutex_lock(&self->left_dongle->mutex);
+		self->left_dongle->taken = true;
 		log_status(self, "has taken a dongle");
-		pthread_mutex_unlock(&self->left_dongle->mutex);
+		if (check_burnout(self))
+		{
+			self->left_dongle->taken = false;
+			pthread_mutex_unlock(&self->left_dongle->mutex);
+			return (true);
+		}
 		while (!check_burnout(self))
 			usleep(1000);
 		return (true);
 	}
 
+	// Orden pares/impares para evitar deadlock
 	if (self->id % 2 == 0)
 	{
 		first = self->right_dongle;
@@ -94,22 +104,35 @@ bool	take_dongles_fifo(t_coder *self)
 		second = self->right_dongle;
 	}
 
+	// Coger el primer dongle
 	pthread_mutex_lock(&first->mutex);
 	first->taken = true;
 	log_status(self, "has taken a dongle");
+	
+	// Verificar burnout después del primer dongle
+	if (check_burnout(self))
+	{
+		first->taken = false;
+		pthread_mutex_unlock(&first->mutex);
+		return (true);
+	}
 
+	// Coger el segundo dongle
 	pthread_mutex_lock(&second->mutex);
 	second->taken = true;
 	log_status(self, "has taken a dongle");
 
+	// Verificar burnout después del segundo dongle
 	if (check_burnout(self))
 	{
+		// Liberar ambos dongles si se quema
 		first->taken = false;
 		pthread_mutex_unlock(&first->mutex);
 		second->taken = false;
 		pthread_mutex_unlock(&second->mutex);
 		return (true);
 	}
+	
 	return (false);
 }
 
@@ -191,7 +214,7 @@ bool	compile(t_coder *self)
 
 	// HACEMOS LA ACCIÓN
 	usleep(self->config->time_to_compile * 1000);
-
+	
 	return (check_burnout(self));
 }
 

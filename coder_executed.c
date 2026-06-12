@@ -60,9 +60,12 @@ void	*coder_executed(void *arg)
 			if (take_dongles_edf(self))
 				return (NULL);
 		// if (take_dongles(self))		//coger dongle
-		// 	return (NULL);
+				// 	return (NULL);
 		if (compile(self))			// compilar
+		{
+			release_and_cooldown(self); // liberar antes de salir si se quemó durante/tras compile
 			return (NULL);
+		}
 		release_and_cooldown(self);	//cooldown
 		if (self->compile_count >= self->config->number_of_compiles_required)
 			break ; // o return (NULL); si quieres terminar el hilo directamente aquí

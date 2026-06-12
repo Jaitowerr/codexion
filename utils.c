@@ -38,30 +38,33 @@ void *safe_malloc(size_t size, t_context *ctx)
     return ptr;
 }
 
-void free_context(t_context *ctx)
+void	free_context(t_context *ctx)
 {
-    if (ctx->config)
-    {
-    //     free(ctx->config);
-        ctx->config = NULL;
-    }
-    if (ctx->dongles)
-    {
-        free(ctx->dongles);
-        ctx->dongles = NULL;
-    }
-    if (ctx->coders)
-    {
-        free(ctx->coders);
-        ctx->coders = NULL;
-    }
-    if (ctx->threads)
-    {
-        free(ctx->threads);
-        ctx->threads = NULL;
-    }
-    pthread_mutex_destroy(&ctx->burnout_mutex);
-    pthread_mutex_destroy(&ctx->log_mutex);
+	int	i;
+
+	if (ctx->dongles && ctx->config)
+	{
+		i = -1;
+		while (++i < ctx->config->number_of_coders)
+		{
+			pthread_mutex_destroy(&ctx->dongles[i].mutex);
+			pthread_cond_destroy(&ctx->dongles[i].cond);
+		}
+		free(ctx->dongles);
+		ctx->dongles = NULL;
+	}
+	if (ctx->coders)
+	{
+		free(ctx->coders);
+		ctx->coders = NULL;
+	}
+	if (ctx->threads)
+	{
+		free(ctx->threads);
+		ctx->threads = NULL;
+	}
+	pthread_mutex_destroy(&ctx->burnout_mutex);
+	pthread_mutex_destroy(&ctx->log_mutex);
 }
 
 
