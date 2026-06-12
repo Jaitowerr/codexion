@@ -31,7 +31,7 @@ void    init_dongles(t_dongle *dongle, int count)
     }
 }
 
-t_dongle *create_and_init_dongles(int count, t_context *ctx)
+t_dongle    *create_and_init_dongles(int count, t_context *ctx)
 {
     t_dongle *dongles;
 

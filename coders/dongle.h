@@ -27,8 +27,8 @@ typedef struct s_dongle
 	// struct s_dongle *prev;
 }					t_dongle;
 
-t_dongle *create_and_init_dongles(int count, struct s_context *ctx);
+t_dongle 	*create_and_init_dongles(int count, struct s_context *ctx);
 
-void				init_dongles(t_dongle *dongles, int count);
+void		init_dongles(t_dongle *dongles, int count);
 
 #endif
