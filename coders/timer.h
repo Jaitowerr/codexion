@@ -15,6 +15,6 @@
 
 // # include <sys/time.h>
 
-long	get_current_time_ms(void);
+long long	get_current_time_ms(void);
 
 #endif

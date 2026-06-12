@@ -38,7 +38,7 @@ static bool	parse_int_arg(int *value, char *arg, const char *message)
 
 static bool	validate_coders(char *arg)
 {
-	if (!is_number(arg) || atoi(arg) < 2)
+	if (!is_number(arg) || atoi(arg) < 1)
 	{
 		printf("Error: number_of_coders debe ser mayor a 1.\n");
 		return (false);

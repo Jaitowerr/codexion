@@ -27,8 +27,8 @@ typedef struct s_context
     bool			someone_burned;
 	pthread_mutex_t burnout_mutex;
 	pthread_t 		monitor_thread;	///hilo para el burnout
-
     long long       start_time;
+    pthread_mutex_t log_mutex;        // NUEVO: protege las impresiones
 
 } t_context;
 

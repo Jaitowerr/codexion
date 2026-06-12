@@ -19,6 +19,8 @@ void init_context(t_context *ctx)
     ctx->coders = NULL;
     ctx->threads = NULL;
 	ctx->someone_burned = false;
+    pthread_mutex_init(&ctx->burnout_mutex, NULL);
+    pthread_mutex_init(&ctx->log_mutex, NULL);
 
 }
 
@@ -58,6 +60,8 @@ void free_context(t_context *ctx)
         free(ctx->threads);
         ctx->threads = NULL;
     }
+    pthread_mutex_destroy(&ctx->burnout_mutex);
+    pthread_mutex_destroy(&ctx->log_mutex);
 }
 
 
@@ -76,16 +80,32 @@ void free_context(t_context *ctx)
 // }
 
 
-void	log_status(t_coder *self, const char *status)
+void    log_status(t_coder *self, const char *status)
 {
-	t_context	*ctx;
-	long long	timestamp;
+    t_context   *ctx;
+    long long   timestamp;
 
-	ctx = self->ctx;
-	
-	if (!ctx->someone_burned)
-	{
-		timestamp = get_current_time_ms() - ctx->start_time;
-		printf("%lld %d %s\n", timestamp, self->id, status);
-	}
+    ctx = self->ctx;
+    timestamp = get_current_time_ms() - ctx->start_time;
+
+    pthread_mutex_lock(&ctx->log_mutex); // Si nadie se ha quemado, imprimimos cualquier estado.
+    if (!ctx->someone_burned || strcmp(status, "burned out") == 0)     // Si alguien se ha quemado, solo permitimos imprimir el propio "burned out".
+    {
+        printf("%lld %d %s\n", timestamp, self->id, status);
+    }
+    pthread_mutex_unlock(&ctx->log_mutex);
 }
+
+// void	log_status(t_coder *self, const char *status)
+// {
+// 	t_context	*ctx;
+// 	long long	timestamp;
+
+// 	ctx = self->ctx;
+	
+// 	if (!ctx->someone_burned)
+// 	{
+// 		timestamp = get_current_time_ms() - ctx->start_time;
+// 		printf("%lld %d %s\n", timestamp, self->id, status);
+// 	}
+// }
