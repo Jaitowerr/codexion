@@ -51,8 +51,16 @@ void	*coder_executed(void *arg)
 	{
 		// printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
 		self->last_compile_ms = get_current_time_ms();	//guardo el tiempo porque empiezo a esperar ahora
-		if (take_dongles(self))		//coger dongle
-			return (NULL);
+		if (strcmp(self->config->scheduler, "fifo") == 0)
+		{
+			if (take_dongles_fifo(self))
+				return (NULL);
+		}
+		else
+			if (take_dongles_edf(self))
+				return (NULL);
+		// if (take_dongles(self))		//coger dongle
+		// 	return (NULL);
 		if (compile(self))			// compilar
 			return (NULL);
 		release_and_cooldown(self);	//cooldown

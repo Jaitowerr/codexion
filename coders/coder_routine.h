@@ -27,9 +27,11 @@ bool	do_debug(t_coder *self);
 
 bool	do_refactor(t_coder *self);
 
-bool	take_dongles(t_coder *self);
+// bool	take_dongles(t_coder *self);
 
+bool	take_dongles_fifo(t_coder *self);
 
+bool	take_dongles_edf(t_coder *self);
 
 
 

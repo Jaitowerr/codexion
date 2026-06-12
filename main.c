@@ -51,6 +51,13 @@ int	main(int argc, char **argv)
 
 	create_threads(&ctx);
 
+	int i = 0;
+	while (i < ctx.config->number_of_coders)
+	{
+		printf("Coder %i: %i compilaciones\n", ctx.coders[i].id, ctx.coders[i].compile_count);
+		i++;
+	}
+
 	free_context(&ctx);
 	return (0);
 }

@@ -56,8 +56,9 @@ bool check_burnout(t_coder *self)
 // 	return (false);
 // }
 
+// ... includes arriba ...
 
-bool	take_dongles(t_coder *self)
+bool	take_dongles_fifo(t_coder *self)
 {
 	t_dongle	*first;
 	t_dongle	*second;
@@ -72,19 +73,16 @@ bool	take_dongles(t_coder *self)
 	if (check_burnout(self))
 		return (true);
 
-	// Caso especial: 1 coder (mismo dongle para ambos lados)
 	if (self->left_dongle == self->right_dongle)
 	{
 		pthread_mutex_lock(&self->left_dongle->mutex);
 		log_status(self, "has taken a dongle");
-		self->left_dongle->taken = false;
 		pthread_mutex_unlock(&self->left_dongle->mutex);
 		while (!check_burnout(self))
 			usleep(1000);
 		return (true);
 	}
 
-	// Orden pares e impares para romper el deadlock circular
 	if (self->id % 2 == 0)
 	{
 		first = self->right_dongle;
@@ -115,41 +113,70 @@ bool	take_dongles(t_coder *self)
 	return (false);
 }
 
+// Por ahora EDF usa exactamente la misma lógica que FIFO; luego la cambiaremos
+bool	take_dongles_edf(t_coder *self)
+{
+	return (take_dongles_fifo(self));
+}
+
 // bool	take_dongles(t_coder *self)
 // {
-// 	while ((get_current_time_ms() < self->left_dongle->available_at_ms)
-// 		|| (get_current_time_ms() < self->right_dongle->available_at_ms))
+// 	t_dongle	*first;
+// 	t_dongle	*second;
+
+// 	while (get_current_time_ms() < self->left_dongle->available_at_ms
+// 		|| get_current_time_ms() < self->right_dongle->available_at_ms)
 // 	{
 // 		if (check_burnout(self))
 // 			return (true);
-// 		usleep(100); 	//Mientras izq o dr no esté disponible, duerme el hilo o espera 0.1 milisegundo, mejor prueba, mas consumo de cpu
+// 		usleep(100);
 // 	}
 // 	if (check_burnout(self))
 // 		return (true);
 
-// 	//COGER DONGLES
-// 	pthread_mutex_lock(&self->left_dongle->mutex);
-// 	self->left_dongle->taken = true;		//luego eliminar y de la lista
-// 	log_status(self, "has taken a dongle");
-
+// 	// Caso especial: 1 coder (mismo dongle para ambos lados)
 // 	if (self->left_dongle == self->right_dongle)
 // 	{
-// 		unlock_dongle_mutex(self);
+// 		pthread_mutex_lock(&self->left_dongle->mutex);
+// 		log_status(self, "has taken a dongle");
+// 		self->left_dongle->taken = false;
+// 		pthread_mutex_unlock(&self->left_dongle->mutex);
 // 		while (!check_burnout(self))
 // 			usleep(1000);
 // 		return (true);
 // 	}
-// 	pthread_mutex_lock(&self->right_dongle->mutex);
-// 	self->right_dongle->taken = true;
+
+// 	// Orden pares e impares para romper el deadlock circular
+// 	if (self->id % 2 == 0)
+// 	{
+// 		first = self->right_dongle;
+// 		second = self->left_dongle;
+// 	}
+// 	else
+// 	{
+// 		first = self->left_dongle;
+// 		second = self->right_dongle;
+// 	}
+
+// 	pthread_mutex_lock(&first->mutex);
+// 	first->taken = true;
+// 	log_status(self, "has taken a dongle");
+
+// 	pthread_mutex_lock(&second->mutex);
+// 	second->taken = true;
 // 	log_status(self, "has taken a dongle");
 
 // 	if (check_burnout(self))
 // 	{
-// 		return (unlock_dongle_mutex(self)); // Soltar dongles porque los tenemos cogidos
+// 		first->taken = false;
+// 		pthread_mutex_unlock(&first->mutex);
+// 		second->taken = false;
+// 		pthread_mutex_unlock(&second->mutex);
+// 		return (true);
 // 	}
-// 	// printf("  - COGER DONGLES programador ID-%i izq %i dr %i\n", self->id, self->left_dongle->id, self->right_dongle->id);
 // 	return (false);
 // }
+
 
 bool	compile(t_coder *self)
 {
