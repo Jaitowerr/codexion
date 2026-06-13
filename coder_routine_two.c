@@ -36,27 +36,58 @@
 // 	return (false);
 // }
 
+
+
+
+
+static void	release_one_dongle(t_dongle *dongle, long next_available)
+{
+	pthread_mutex_lock(&dongle->mutex);
+	dongle->available_at_ms = next_available;
+	if (dongle->wait_queue)
+	{
+		// Lo dejamos taken = true, ya está reservado para el siguiente
+		dongle->wait_queue->granted = true;
+		pthread_cond_signal(&dongle->wait_queue->cond);
+	}
+	else
+		dongle->taken = false;  // Solo liberamos si nadie espera
+	pthread_mutex_unlock(&dongle->mutex);
+}
+
 bool	release_and_cooldown(t_coder *self)
 {
-	long	now_ms;
 	long	next_available;
 
-	now_ms = get_current_time_ms();
-	next_available = now_ms + self->config->dongle_cooldown;
-
-	//COOLDOWN - TERMINAR Y SOLTAR DONGLES
-	self->left_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
-	self->left_dongle->taken = false;
-	pthread_mutex_unlock(&self->left_dongle->mutex);
-
-	self->right_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
-	self->right_dongle->taken = false;
-	pthread_mutex_unlock(&self->right_dongle->mutex);
-
-	// printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
+	next_available = get_current_time_ms() + self->config->dongle_cooldown;
+	release_one_dongle(self->left_dongle, next_available);
+	if (self->left_dongle != self->right_dongle)
+		release_one_dongle(self->right_dongle, next_available);
 	self->compile_count++;
 	return (false);
 }
+
+// bool	release_and_cooldown(t_coder *self)
+// {
+// 	long	now_ms;
+// 	long	next_available;
+
+// 	now_ms = get_current_time_ms();
+// 	next_available = now_ms + self->config->dongle_cooldown;
+
+// 	//COOLDOWN - TERMINAR Y SOLTAR DONGLES
+// 	self->left_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
+// 	self->left_dongle->taken = false;
+// 	pthread_mutex_unlock(&self->left_dongle->mutex);
+
+// 	self->right_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
+// 	self->right_dongle->taken = false;
+// 	pthread_mutex_unlock(&self->right_dongle->mutex);
+
+// 	// printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
+// 	self->compile_count++;
+// 	return (false);
+// }
 
 bool	do_debug(t_coder *self)
 {

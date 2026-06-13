@@ -15,6 +15,14 @@
 
 struct s_context;
 
+typedef struct s_request
+{
+    int              coder_id;
+    bool             granted;
+    pthread_cond_t   cond;
+    struct s_request *next;
+}   t_request;
+
 typedef struct s_dongle
 {
 	int             id;	//identificador mismo que coder
@@ -25,6 +33,7 @@ typedef struct s_dongle
 	pthread_cond_t	cond;	//sirve para avisar a los hilos que esperana que esté libre
 	// struct s_dongle *next;
 	// struct s_dongle *prev;
+	t_request       *wait_queue;
 }					t_dongle;
 
 t_dongle 	*create_and_init_dongles(int count, struct s_context *ctx);

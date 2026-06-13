@@ -27,6 +27,7 @@ void    init_dongles(t_dongle *dongle, int count)
         // gettimeofday(&dongle[i].available_at_ms, NULL);
         pthread_mutex_init(&dongle[i].mutex, NULL);
         pthread_cond_init(&dongle[i].cond, NULL);
+        dongle[i].wait_queue = NULL;   // <-- NUEVO
         i++;
     }
 }

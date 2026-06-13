@@ -89,24 +89,24 @@ static bool	check_all_coders(t_context *ctx, bool *all_done)
 // }
 
 // Hilo principal de vigilancia
-void	*monitor_routine(void *arg)
-{
-	t_context	*ctx;
-	bool		all_done;
+// void	*monitor_routine(void *arg)
+// {
+// 	t_context	*ctx;
+// 	bool		all_done;
 
-	ctx = (t_context *)arg;
-	while (1)
-	{
-		if (is_simulation_over(ctx))              // Si alguien se quemó, sale
-			break ;
-		if (check_all_coders(ctx, &all_done))      // Si detecta burnout en este ciclo
-			break ;
-		if (all_done)                             // Si todos terminaron OK
-			break ;
-		usleep(5000);                             // Precisión de 5ms
-	}
-	return (NULL);
-}
+// 	ctx = (t_context *)arg;
+// 	while (1)
+// 	{
+// 		if (is_simulation_over(ctx))              // Si alguien se quemó, sale
+// 			break ;
+// 		if (check_all_coders(ctx, &all_done))      // Si detecta burnout en este ciclo
+// 			break ;
+// 		if (all_done)                             // Si todos terminaron OK
+// 			break ;
+// 		usleep(5000);                             // Precisión de 5ms
+// 	}
+// 	return (NULL);
+// }
 
 
 // void	*monitor_routine(void *arg)
@@ -188,3 +188,53 @@ void	*monitor_routine(void *arg)
 // 	}
 // 	return (NULL);
 // }
+
+
+
+
+
+
+static void	wake_all_dongles(t_context *ctx)
+{
+	int			i;
+	t_request	*req;
+
+	i = 0;
+	while (i < ctx->config->number_of_coders)
+	{
+		pthread_mutex_lock(&ctx->dongles[i].mutex);
+		req = ctx->dongles[i].wait_queue;
+		while (req)
+		{
+			pthread_cond_signal(&req->cond);
+			req = req->next;
+		}
+		pthread_mutex_unlock(&ctx->dongles[i].mutex);
+		i++;
+	}
+}
+
+void	*monitor_routine(void *arg)
+{
+	t_context	*ctx;
+	bool		all_done;
+
+	ctx = (t_context *)arg;
+	while (1)
+	{
+		if (is_simulation_over(ctx))
+		{
+			wake_all_dongles(ctx);
+			break ;
+		}
+		if (check_all_coders(ctx, &all_done))
+		{
+			wake_all_dongles(ctx);
+			break ;
+		}
+		if (all_done)
+			break ;
+		usleep(5000);
+	}
+	return (NULL);
+}
