@@ -40,7 +40,7 @@ static bool	validate_coders(char *arg)
 {
 	if (!is_number(arg) || atoi(arg) < 1)
 	{
-		printf("Error: number_of_coders debe ser mayor a 1.\n");
+		printf("Error: number_of_coders debe ser un número, y mayor de 0.\n");
 		return (false);
 	}
 	return (true);
@@ -49,24 +49,23 @@ static bool	validate_coders(char *arg)
 static bool	parse_int_params(t_config *config, char **argv)
 {
 	if (!parse_int_arg(&config->time_to_burnout, argv[2],
-			"Error: time_to_burnout debe ser un número mayor de 0."))
+			"Error: time_to_burnout debe ser un número, y mayor de 0."))
 		return (false);
 	if (!parse_int_arg(&config->time_to_compile, argv[3],
-			"Error: time_to_compile debe ser un entero mayor de 0."))
+			"Error: time_to_compile debe ser un número, y mayor de 0."))
 		return (false);
 	if (!parse_int_arg(&config->time_to_debug, argv[4],
-			"Error: time_to_debug debe ser un entero mayor de 0."))
+			"Error: time_to_debug debe ser un número, y mayor de 0."))
 		return (false);
 	if (!parse_int_arg(&config->time_to_refactor, argv[5],
-			"Error: time_to_refactor debe ser un entero mayor de 0."))
+			"Error: time_to_refactor debe ser un número, y mayor de 0."))
 		return (false);
 	if (!parse_int_arg(&config->number_of_compiles_required,
 			argv[6],
-			"Error: number_of_compiles_required debe ser un entero "
-			"mayor de 0."))
+			"Error: number_of_compiles_required debe ser un número, y mayor de 0."))
 		return (false);
 	if (!parse_int_arg(&config->dongle_cooldown, argv[7],
-			"Error: dongle_cooldown debe ser un entero mayor de 0."))
+			"Error: dongle_cooldown debe ser un número, y mayor de 0."))
 		return (false);
 	return (true);
 }
