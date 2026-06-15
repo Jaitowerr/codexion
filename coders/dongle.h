@@ -18,6 +18,7 @@ struct s_context;
 typedef struct s_request
 {
     int              coder_id;
+	long long        deadline; 
     bool             granted;
     pthread_cond_t   cond;
     struct s_request *next;
