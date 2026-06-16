@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   monitor_routine.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -60,140 +60,6 @@ static bool	check_all_coders(t_context *ctx, bool *all_done)
 	return (false);
 }
 
-// // Revisa si un coder se ha quemado o si ha terminado su trabajo
-// static bool	check_all_coders(t_context *ctx, bool *all_done)
-// {
-// 	int			i;
-// 	long long	now;
-
-// 	i = 0;
-// 	*all_done = true;
-// 	while (i < ctx->config->number_of_coders)
-// 	{
-// 		now = get_current_time_ms();
-// 		if (now > ctx->coders[i].last_compile_ms + ctx->config->time_to_burnout)
-// 		{
-// 			pthread_mutex_lock(&ctx->burnout_mutex);
-// 			if (ctx->someone_burned)
-// 				return (pthread_mutex_unlock(&ctx->burnout_mutex), true);
-// 			ctx->someone_burned = true;
-// 			pthread_mutex_unlock(&ctx->burnout_mutex);
-// 			log_status(&ctx->coders[i], "burned out");
-// 			return (true);
-// 		}
-// 		if (ctx->coders[i].compile_count < ctx->config->number_of_compiles_required)
-// 			*all_done = false;
-// 		i++;
-// 	}
-// 	return (false);
-// }
-
-// Hilo principal de vigilancia
-// void	*monitor_routine(void *arg)
-// {
-// 	t_context	*ctx;
-// 	bool		all_done;
-
-// 	ctx = (t_context *)arg;
-// 	while (1)
-// 	{
-// 		if (is_simulation_over(ctx))              // Si alguien se quemó, sale
-// 			break ;
-// 		if (check_all_coders(ctx, &all_done))      // Si detecta burnout en este ciclo
-// 			break ;
-// 		if (all_done)                             // Si todos terminaron OK
-// 			break ;
-// 		usleep(5000);                             // Precisión de 5ms
-// 	}
-// 	return (NULL);
-// }
-
-
-// void	*monitor_routine(void *arg)
-// {
-// 	t_context	*ctx;
-// 	int			i;
-// 	long long	now;
-// 	long long	deadline;
-
-// 	ctx = (t_context *)arg;
-// 	while (1)
-// 	{
-// 		pthread_mutex_lock(&ctx->burnout_mutex);
-// 		if (ctx->someone_burned)
-// 		{
-// 			pthread_mutex_unlock(&ctx->burnout_mutex);
-// 			break ;
-// 		}
-// 		pthread_mutex_unlock(&ctx->burnout_mutex);
-
-// 		i = 0;
-// 		while (i < ctx->config->number_of_coders)
-// 		{
-// 			now = get_current_time_ms();
-// 			deadline = ctx->coders[i].last_compile_ms + ctx->config->time_to_burnout;
-
-// 			if (now > deadline)
-// 			{
-// 				pthread_mutex_lock(&ctx->burnout_mutex);
-// 				if (!ctx->someone_burned) // Doble check para no loguear dos veces
-// 				{
-// 					ctx->someone_burned = true;
-// 					pthread_mutex_unlock(&ctx->burnout_mutex);
-// 					log_status(&ctx->coders[i], "burned out");
-// 					return (NULL);
-// 				}
-// 				pthread_mutex_unlock(&ctx->burnout_mutex);
-// 			}
-// 			i++;
-// 		}
-// 		usleep(5000); // Revisamos cada 5ms (precisión < 10ms como pide el subject)
-// 	}
-// 	return (NULL);
-// }
-
-
-// void	*monitor_routine(void *arg)
-// {
-// 	t_context	*ctx;
-// 	int			i;
-
-// 	ctx = (t_context *)arg;
-// 	// El monitor corre mientras nadie se haya quemado
-// 	while (1)
-// 	{
-// 		pthread_mutex_lock(&ctx->burnout_mutex);
-// 		if (ctx->someone_burned)
-// 		{
-// 			pthread_mutex_unlock(&ctx->burnout_mutex);
-// 			break ;
-// 		}
-// 		pthread_mutex_unlock(&ctx->burnout_mutex);
-		
-// 		i = 0;
-// 		while (i < ctx->config->number_of_coders)
-// 		{
-// 			// Si el tiempo actual menos el inicio de su última tarea supera el límite...
-// 			if (get_current_time_ms() - ctx->coders[i].last_compile_ms > ctx->config->time_to_burnout)
-// 			{
-// 				pthread_mutex_lock(&ctx->burnout_mutex);
-// 				ctx->someone_burned = true; // El monitor da la orden de parada
-// 				pthread_mutex_unlock(&ctx->burnout_mutex);
-// 				log_status(&ctx->coders[i], "burned out");
-// 				return (NULL);
-// 			}
-// 			i++;
-// 		}
-// 		usleep(5000); // Pequeño descanso para no saturar la CPU (5ms)
-// 	}
-// 	return (NULL);
-// }
-
-
-
-
-
-
 static void	wake_all_dongles(t_context *ctx)
 {
 	int			i;
@@ -206,7 +72,8 @@ static void	wake_all_dongles(t_context *ctx)
 		req = ctx->dongles[i].wait_queue;
 		while (req)
 		{
-			pthread_cond_signal(&req->cond);
+			// pthread_cond_broadcast(&req->cond);
+			pthread_cond_broadcast(&req->cond);
 			req = req->next;
 		}
 		pthread_mutex_unlock(&ctx->dongles[i].mutex);

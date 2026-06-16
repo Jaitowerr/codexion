@@ -59,7 +59,7 @@ static void	handle_burnout_edf(t_dongle *dongle, t_request *req)
 		{
 			dongle->wait_queue->granted = true;
 			dongle->taken = true;
-			pthread_cond_signal(&dongle->wait_queue->cond);
+			pthread_cond_broadcast(&dongle->wait_queue->cond);
 		}
 	}
 }
@@ -228,7 +228,7 @@ static void	handle_burnout_fifo(t_dongle *dongle, t_request *req)
 		{
 			dongle->wait_queue->granted = true;
 			dongle->taken = true;
-			pthread_cond_signal(&dongle->wait_queue->cond);
+			pthread_cond_broadcast(&dongle->wait_queue->cond);
 		}
 	}
 }
