@@ -13,24 +13,25 @@
 #ifndef CODER_H
 # define CODER_H
 
-typedef	struct s_context	t_context;
 struct	s_dongle;
+
+struct	s_context;
 
 typedef struct s_coder
 {
-	int				id;
-	int				compile_count;
-	long long		last_compile_ms;
-	t_dongle		*left_dongle;
-	t_dongle		*right_dongle;
-	t_config		*config;
-	t_context		*ctx;
+	int					id;
+	int					compile_count;
+	long long			last_compile_ms;
+	t_dongle			*left_dongle;
+	t_dongle			*right_dongle;
+	t_config			*config;
+	struct s_context	*ctx;
 }	t_coder;
 
 t_coder	*create_and_init_coders(int count, t_dongle *dongles,
-			t_context *ctx);
+			struct s_context *ctx);
 void	init_coders(t_coder *coders, t_dongle *dongles, int count,
-			t_context *ctx);
+			struct s_context *ctx);
 void	*coder_routine(void *arg);
 
 #endif
