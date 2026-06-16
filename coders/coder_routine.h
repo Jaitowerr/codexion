@@ -30,10 +30,27 @@ bool	do_refactor(t_coder *self);
 // bool	take_dongles(t_coder *self);
 
 bool	take_dongles_fifo(t_coder *self);
+void	cleanup_on_burnout_both_fifo(t_dongle *first, t_dongle *second);
+void	init_request_fifo(t_request *req, t_coder *self);
+void	insert_in_queue_fifo(t_dongle *dongle, t_request *req);
+void	wait_for_grant_or_burnout_fifo(t_dongle *dongle, t_request *req, t_coder *self);
+void	handle_burnout_fifo(t_dongle *dongle, t_request *req);
 
 bool	take_dongles_edf(t_coder *self);
+void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second);
+void	init_request_edf(t_request *req, t_coder *self);
+void	insert_in_queue_edf(t_dongle *dongle, t_request *req);
+void	wait_for_grant_or_burnout_edf(t_dongle *dongle, t_request *req, t_coder *self);
+void	remove_from_queue_edf(t_dongle *dongle, t_request *req);
+void	handle_burnout_edf(t_dongle *dongle, t_request *req);
+void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second);
+
+
+
+
 
 bool	sleep_with_burnout_check(t_coder *self, long ms);
+
 
 
 

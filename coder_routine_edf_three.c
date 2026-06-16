@@ -12,39 +12,27 @@
 
 #include "coders/codexion.h"
 
-static void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
-{
-	struct timespec	ts;
-	long long		now;
 
-	while (!check_burnout(self))
+void	handle_burnout_edf(t_dongle *dongle, t_request *req)
+{
+	if (req->granted)
 	{
-		now = get_current_time_ms();
-		if (now >= dongle->available_at_ms)
-			break ;
-		ts.tv_sec  = (now + 50) / 1000;
-		ts.tv_nsec = ((now + 50) % 1000) * 1000000;
-		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
+		dongle->taken = false;
+		if (dongle->wait_queue)
+		{
+			dongle->wait_queue->granted = true;
+			dongle->taken = true;
+			pthread_cond_broadcast(&dongle->wait_queue->cond);
+		}
 	}
 }
 
-bool check_burnout(t_coder *self)
+void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second)
 {
-	pthread_mutex_lock(&self->ctx->burnout_mutex);
-	if (self->ctx->someone_burned)
-	{
-		pthread_mutex_unlock(&self->ctx->burnout_mutex);
-		return (true);
-	}
-	pthread_mutex_unlock(&self->ctx->burnout_mutex);
-	return (false);
-}
-
-bool	compile(t_coder *self)
-{
-	if (check_burnout(self))
-		return (true);
-	log_status(self, "is compiling");
-	self->last_compile_ms = get_current_time_ms();
-	return (sleep_with_burnout_check(self, self->config->time_to_compile));
+	pthread_mutex_lock(&first->mutex);
+	first->taken = false;
+	pthread_mutex_unlock(&first->mutex);
+	pthread_mutex_lock(&second->mutex);
+	second->taken = false;
+	pthread_mutex_unlock(&second->mutex);
 }
