@@ -33,6 +33,8 @@ bool	take_dongles_fifo(t_coder *self);
 
 bool	take_dongles_edf(t_coder *self);
 
+bool	sleep_with_burnout_check(t_coder *self, long ms);
+
 
 
 #endif

@@ -64,19 +64,35 @@ static void	handle_burnout_edf(t_dongle *dongle, t_request *req)
 	}
 }
 
-static void	wait_cooldown_edf(t_dongle *dongle, t_request *req, t_coder *self)
+static void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
 {
 	struct timespec	ts;
-	long long		wait_until;
+	long long		now;
 
-	wait_until = dongle->available_at_ms;
-	while (get_current_time_ms() < wait_until && !check_burnout(self))
+	while (!check_burnout(self))
 	{
-		ts.tv_sec  = wait_until / 1000;
-		ts.tv_nsec = (wait_until % 1000) * 1000000;
+		now = get_current_time_ms();
+		if (now >= dongle->available_at_ms)
+			break ;
+		ts.tv_sec  = (now + 50) / 1000;
+		ts.tv_nsec = ((now + 50) % 1000) * 1000000;
 		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
 	}
 }
+
+// static void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
+// {
+// 	struct timespec	ts;
+// 	long long		wait_until;
+
+// 	wait_until = dongle->available_at_ms;
+// 	while (get_current_time_ms() < wait_until && !check_burnout(self))
+// 	{
+// 		ts.tv_sec  = wait_until / 1000;
+// 		ts.tv_nsec = (wait_until % 1000) * 1000000;
+// 		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
+// 	}
+// }
 
 // Función take_one_dongle_edf refactorizada
 static void	take_one_dongle_edf(t_dongle *dongle, t_coder *self)
@@ -107,7 +123,7 @@ static void	take_one_dongle_edf(t_dongle *dongle, t_coder *self)
 		return ;
 	}
 
-	wait_cooldown_edf(dongle, &req, self);
+	wait_cooldown_fifo_edf(dongle, &req, self);
 	pthread_mutex_unlock(&dongle->mutex);
 	pthread_cond_destroy(&req.cond);
 }
@@ -233,19 +249,19 @@ static void	handle_burnout_fifo(t_dongle *dongle, t_request *req)
 	}
 }
 
-static void	wait_cooldown_fifo(t_dongle *dongle, t_request *req, t_coder *self)
-{
-	struct timespec	ts;
-	long long		wait_until;
+// static void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
+// {
+// 	struct timespec	ts;
+// 	long long		wait_until;
 
-	wait_until = dongle->available_at_ms;
-	while (get_current_time_ms() < wait_until && !check_burnout(self))
-	{
-		ts.tv_sec  = wait_until / 1000;
-		ts.tv_nsec = (wait_until % 1000) * 1000000;
-		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
-	}
-}
+// 	wait_until = dongle->available_at_ms;
+// 	while (get_current_time_ms() < wait_until && !check_burnout(self))
+// 	{
+// 		ts.tv_sec  = wait_until / 1000;
+// 		ts.tv_nsec = (wait_until % 1000) * 1000000;
+// 		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
+// 	}
+// }
 
 // Función take_one_dongle_fifo refactorizada
 static void	take_one_dongle_fifo(t_dongle *dongle, t_coder *self)
@@ -276,7 +292,7 @@ static void	take_one_dongle_fifo(t_dongle *dongle, t_coder *self)
 		return ;
 	}
 
-	wait_cooldown_fifo(dongle, &req, self);
+	wait_cooldown_fifo_edf(dongle, &req, self);
 	pthread_mutex_unlock(&dongle->mutex);
 	pthread_cond_destroy(&req.cond);
 }
@@ -368,15 +384,7 @@ bool	compile(t_coder *self)
 {
 	if (check_burnout(self))
 		return (true);
-    
 	log_status(self, "is compiling");
-    
-	// pthread_mutex_lock(&self->ctx->burnout_mutex);
-	self->last_compile_ms = get_current_time_ms();     // El "time to burnout" se resetea al empezar a compilar.
-	// pthread_mutex_unlock(&self->ctx->burnout_mutex);
-
-	// HACEMOS LA ACCIÓN
-	usleep(self->config->time_to_compile * 1000);
-	
-	return (check_burnout(self));
+	self->last_compile_ms = get_current_time_ms();
+	return (sleep_with_burnout_check(self, self->config->time_to_compile));
 }

@@ -1,6 +1,0 @@
-./codexion 3 8000 2000 100000000 100 5 100 edf
-se queda esperando despues de quemarse, no se detiene, el hilo debería parar la ejecuciion
-
-utilizo pthread_cond_signal, no se permite, hay que utilizar broadcast
-
-otro error en foto según pruebas

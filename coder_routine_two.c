@@ -12,7 +12,6 @@
 
 #include "coders/codexion.h"
 
-
 static void	release_one_dongle(t_dongle *dongle, long next_available)
 {
 	pthread_mutex_lock(&dongle->mutex);
@@ -40,18 +39,37 @@ bool	release_and_cooldown(t_coder *self)
 	return (false);
 }
 
+bool	sleep_with_burnout_check(t_coder *self, long ms)
+{
+	long	slept;
+	long	chunk;
+
+	slept = 0;
+	while (slept < ms)
+	{
+		if (check_burnout(self))
+			return (true);
+		chunk = ms - slept;
+		if (chunk > 50)
+			chunk = 50;
+		usleep(chunk * 1000);
+		slept += chunk;
+	}
+	return (check_burnout(self));
+}
+
 bool	do_debug(t_coder *self)
 {
-    if (check_burnout(self)) return (true);
-    log_status(self, "is debugging"); // Primero el mensaje
-	usleep(self->config->time_to_debug * 1000); // Luego el tiempo
-	return (check_burnout(self));
+	if (check_burnout(self))
+		return (true);
+	log_status(self, "is debugging");
+	return (sleep_with_burnout_check(self, self->config->time_to_debug));
 }
 
 bool	do_refactor(t_coder *self)
 {
-    if (check_burnout(self)) return (true);
-    log_status(self, "is refactoring"); // Primero el mensaje
-	usleep(self->config->time_to_refactor * 1000); // Luego el tiempo
-	return (check_burnout(self));
+	if (check_burnout(self))
+		return (true);
+	log_status(self, "is refactoring");
+	return (sleep_with_burnout_check(self, self->config->time_to_refactor));
 }
