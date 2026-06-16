@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
 /*   Updated: 2026/06/15 18:23:46 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders/codexion.h"
 
-static void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
+void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
 {
 	struct timespec	ts;
 	long long		now;

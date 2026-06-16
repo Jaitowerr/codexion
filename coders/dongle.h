@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dongle.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
+/*   Updated: 2026/06/04 00:00:00 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

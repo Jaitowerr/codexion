@@ -1,26 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   coder_routine.c                                    :+:      :+:    :+:   */
+/*   coder_routine_edf_two.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
 /*   Updated: 2026/06/15 18:23:46 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders/codexion.h"
-
-void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second)
-{
-	pthread_mutex_lock(&first->mutex);
-	first->taken = false;
-	pthread_mutex_unlock(&first->mutex);
-	pthread_mutex_lock(&second->mutex);
-	second->taken = false;
-	pthread_mutex_unlock(&second->mutex);
-}
 
 void	init_request_edf(t_request *req, t_coder *self)
 {
