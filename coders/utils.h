@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -17,31 +17,25 @@
 # include <stdlib.h>
 # include <stdio.h>
 
-/* Contexto: guarda punteros a todo lo que reservemos */
 typedef struct s_context
 {
     t_config    	*config;
     t_dongle    	*dongles;
     t_coder     	*coders;
-    pthread_t  		*threads;    //pthread_t es un tipo especial de variable que identifica a cada hilo.
+    pthread_t  		*threads;
     bool			someone_burned;
 	pthread_mutex_t burnout_mutex;
-	pthread_t 		monitor_thread;	///hilo para el burnout
+	pthread_t 		monitor_thread;
     long long       start_time;
-    pthread_mutex_t log_mutex;        // NUEVO: protege las impresiones
+    pthread_mutex_t log_mutex;
 
 } t_context;
 
-/* Inicializa el contexto a NULL */
 void init_context(t_context *ctx);
 
-/* Libera todo lo que haya en el contexto */
 void free_context(t_context *ctx);
 
-/* malloc seguro: si falla, libera y sale */
 void *safe_malloc(size_t size, t_context *ctx);
-
-// void	print_summary(t_context *ctx);
 
 void    log_status(t_coder *self, const char *status);
 

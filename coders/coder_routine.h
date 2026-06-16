@@ -27,8 +27,6 @@ bool	do_debug(t_coder *self);
 
 bool	do_refactor(t_coder *self);
 
-// bool	take_dongles(t_coder *self);
-
 bool	take_dongles_fifo(t_coder *self);
 void	cleanup_on_burnout_both_fifo(t_dongle *first, t_dongle *second);
 void	init_request_fifo(t_request *req, t_coder *self);
@@ -51,16 +49,8 @@ void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second);
 void	cleanup_on_burnout_single_edf(t_dongle *first);
 void	get_dongle_order_edf(t_coder *self, t_dongle **first, t_dongle **second);
 
-
-
 void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self);
 
-
-
-
 bool	sleep_with_burnout_check(t_coder *self, long ms);
-
-
-
 
 #endif

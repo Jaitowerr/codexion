@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   monitor_routine.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -13,10 +13,6 @@
 #ifndef MONITOR_ROUTINE
 # define MONITOR_ROUTINE
 
-
 void	*monitor_routine(void *arg);
-
-
-
 
 #endif

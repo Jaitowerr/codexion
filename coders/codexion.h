@@ -13,7 +13,6 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-// Librerías
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -23,7 +22,6 @@
 # include <stdbool.h>
 # include <time.h>
 
-// Headers internos
 # include "parser.h"
 # include "dongle.h"
 # include "coder.h"
