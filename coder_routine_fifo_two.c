@@ -15,8 +15,8 @@
 void	init_request_fifo(t_request *req, t_coder *self)
 {
 	req->coder_id = self->id;
-	req->granted  = false;
-	req->next     = NULL;
+	req->granted = false;
+	req->next = NULL;
 }
 
 void	insert_in_queue_fifo(t_dongle *dongle, t_request *req)
@@ -28,7 +28,6 @@ void	insert_in_queue_fifo(t_dongle *dongle, t_request *req)
 		cur = &(*cur)->next;
 	*cur = req;
 }
-
 
 void	wait_for_grant_or_burnout_fifo(t_dongle *dongle, t_request *req,
 	t_coder *self)
@@ -50,6 +49,7 @@ void	handle_burnout_fifo(t_dongle *dongle, t_request *req)
 		}
 	}
 }
+
 void	cleanup_on_burnout_both_fifo(t_dongle *first, t_dongle *second)
 {
 	pthread_mutex_lock(&first->mutex);

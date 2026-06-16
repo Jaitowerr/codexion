@@ -10,9 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TIME_H
-# define TIME_H
-
+#ifndef TIMER_H
+# define TIMER_H
 
 long long	get_current_time_ms(void);
 

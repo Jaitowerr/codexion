@@ -12,7 +12,6 @@
 
 #include "coders/codexion.h"
 
-
 static void	handle_dongle_post_acquisition(t_dongle *dongle, t_request *req,
 				t_coder *self)
 {
@@ -27,7 +26,6 @@ static void	handle_dongle_post_acquisition(t_dongle *dongle, t_request *req,
 	pthread_mutex_unlock(&dongle->mutex);
 	pthread_cond_destroy(&req->cond);
 }
-
 
 static void	take_one_dongle_edf(t_dongle *dongle, t_coder *self)
 {
@@ -55,7 +53,6 @@ static bool	handle_single_or_burnout_case(t_coder *self)
 	return (false);
 }
 
-
 static bool	acquire_both_dongles(t_coder *self)
 {
 	t_dongle	*first;
@@ -78,7 +75,6 @@ static bool	acquire_both_dongles(t_coder *self)
 	log_status(self, "has taken a dongle");
 	return (false);
 }
-
 
 bool	take_dongles_edf(t_coder *self)
 {

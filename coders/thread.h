@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.c                                           :+:      :+:    :+:   */
+/*   thread.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -13,8 +13,8 @@
 #ifndef THREAD_H
 # define THREAD_H
 
-struct s_context;
+struct	s_context;
 
-void create_threads(struct s_context *ctx);
+void	create_threads(struct s_context *ctx);
 
 #endif

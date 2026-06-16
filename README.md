@@ -50,14 +50,14 @@ make run
 ### Uso
 
 ```
-./codexion <number_of_coders> <time_to_burnout> <time_to_compile> <time_to_debug> <time_to_refactor> <number_of_compiles_required> <dongle_cooldown> <scheduler>
+./codexion <numb_of_coders> <time_to_burnout> <time_to_compile> <time_to_debug> <time_to_refactor> <number_of_compiles_required> <dongle_cooldown> <scheduler>
 ```
 
 Todos los tiempos están en **milisegundos**. El planificador acepta los valores `fifo` o `edf`.
 
 | Parámetro                   | Descripción                                               |
 |-----------------------------|-----------------------------------------------------------|
-| `number_of_coders`          | Número de programadores (y de dongles)                    |
+| `numb_of_coders`          | Número de programadores (y de dongles)                    |
 | `time_to_burnout`           | Tiempo máximo sin compilar antes de quemarse              |
 | `time_to_compile`           | Duración de la fase de compilación                        |
 | `time_to_debug`             | Duración de la fase de depuración                         |

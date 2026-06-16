@@ -12,7 +12,6 @@
 
 #include "coders/codexion.h"
 
-
 static void	queue_and_wait_fifo(t_dongle *dongle, t_request *req,
 				t_coder *self)
 {
@@ -20,7 +19,6 @@ static void	queue_and_wait_fifo(t_dongle *dongle, t_request *req,
 	wait_for_grant_or_burnout_fifo(dongle, req, self);
 	remove_from_queue_fifo(dongle, req);
 }
-
 
 static void	take_one_dongle_fifo(t_dongle *dongle, t_coder *self)
 {
@@ -64,7 +62,6 @@ static bool	handle_single_or_burnout_fifo(t_coder *self)
 	return (false);
 }
 
-
 static bool	acquire_two_dongles_fifo(t_coder *self)
 {
 	t_dongle	*first;
@@ -87,7 +84,6 @@ static bool	acquire_two_dongles_fifo(t_coder *self)
 	log_status(self, "has taken a dongle");
 	return (false);
 }
-
 
 bool	take_dongles_fifo(t_coder *self)
 {

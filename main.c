@@ -14,8 +14,9 @@
 
 int	main(int argc, char **argv)
 {
-	t_context 	ctx;
+	t_context	ctx;
 	t_config	config;
+	int			i;
 
 	init_context(&ctx);
 	if (!parse_arguments(argc, argv, &config))
@@ -24,14 +25,15 @@ int	main(int argc, char **argv)
 		exit(1);
 	}
 	ctx.config = &config;
-	ctx.dongles = create_and_init_dongles(config.number_of_coders, &ctx);
-	ctx.coders = create_and_init_coders(config.number_of_coders, ctx.dongles, &config, &ctx);
+	ctx.dongles = create_and_init_dongles(config.numb_of_coders, &ctx);
+	ctx.coders = create_and_init_coders(config.numb_of_coders, ctx.dongles,
+			&ctx);
 	create_threads(&ctx);
-
-	int i = 0;
-	while (i < ctx.config->number_of_coders)
+	i = 0;
+	while (i < ctx.config->numb_of_coders)
 	{
-		printf("Coder %i: %i compilaciones\n", ctx.coders[i].id, ctx.coders[i].compile_count);
+		printf("Coder %i: %i compilaciones\n", ctx.coders[i].id,
+			ctx.coders[i].compile_count);
 		i++;
 	}
 	free_context(&ctx);

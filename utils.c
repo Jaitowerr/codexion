@@ -12,30 +12,29 @@
 
 #include "coders/codexion.h"
 
-void init_context(t_context *ctx)
+void	init_context(t_context *ctx)
 {
-    ctx->config = NULL;
-    ctx->dongles = NULL;
-    ctx->coders = NULL;
-    ctx->threads = NULL;
+	ctx->config = NULL;
+	ctx->dongles = NULL;
+	ctx->coders = NULL;
+	ctx->threads = NULL;
 	ctx->someone_burned = false;
-    pthread_mutex_init(&ctx->burnout_mutex, NULL);
-    pthread_mutex_init(&ctx->log_mutex, NULL);
-
+	pthread_mutex_init(&ctx->burnout_mutex, NULL);
+	pthread_mutex_init(&ctx->log_mutex, NULL);
 }
 
-void *safe_malloc(size_t size, t_context *ctx)
+void	*safe_malloc(size_t size, t_context *ctx)
 {
-    void *ptr;
+	void	*ptr;
 
-    ptr = malloc(size);
-    if (!ptr)
-    {
-        printf("Error: No se pudo reservar memoria.\n");
-        free_context(ctx);
-        exit(1);
-    }
-    return ptr;
+	ptr = malloc(size);
+	if (!ptr)
+	{
+		printf("Error: No se pudo reservar memoria.\n");
+		free_context(ctx);
+		exit(1);
+	}
+	return (ptr);
 }
 
 void	free_context(t_context *ctx)
@@ -45,7 +44,7 @@ void	free_context(t_context *ctx)
 	if (ctx->dongles && ctx->config)
 	{
 		i = -1;
-		while (++i < ctx->config->number_of_coders)
+		while (++i < ctx->config->numb_of_coders)
 		{
 			pthread_mutex_destroy(&ctx->dongles[i].mutex);
 			pthread_cond_destroy(&ctx->dongles[i].cond);
@@ -67,19 +66,17 @@ void	free_context(t_context *ctx)
 	pthread_mutex_destroy(&ctx->log_mutex);
 }
 
-
-void    log_status(t_coder *self, const char *status)
+void	log_status(t_coder *self, const char *status)
 {
-    t_context   *ctx;
-    long long   timestamp;
+	t_context	*ctx;
+	long long	timestamp;
 
-    ctx = self->ctx;
-    timestamp = get_current_time_ms() - ctx->start_time;
-
-    pthread_mutex_lock(&ctx->log_mutex);
-    if (!ctx->someone_burned || strcmp(status, "burned out") == 0)
-    {
-        printf("%lld %d %s\n", timestamp, self->id, status);
-    }
-    pthread_mutex_unlock(&ctx->log_mutex);
+	ctx = self->ctx;
+	timestamp = get_current_time_ms() - ctx->start_time;
+	pthread_mutex_lock(&ctx->log_mutex);
+	if (!ctx->someone_burned || strcmp(status, "burned out") == 0)
+	{
+		printf("%lld %d %s\n", timestamp, self->id, status);
+	}
+	pthread_mutex_unlock(&ctx->log_mutex);
 }

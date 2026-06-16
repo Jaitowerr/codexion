@@ -343,7 +343,7 @@ compite contra el tiempo en este emocionante desafío de concurrencia. Orquesta 
 
 cuando compilemos, que va a recibir el programa:
 El programa debe recibir los siguientes argumentos (todos obligatorios):
-    number_of_coders 
+    numb_of_coders 
     time_to_burnout
     time_to_compile 
     time_to_debug 
@@ -356,7 +356,7 @@ El programa debe recibir los siguientes argumentos (todos obligatorios):
 8 argumentos mas el nombre dle rpograma 9 argumentos
 Necesitamos un parseo que compruebe:
     - argc == 9
-    - minimo 2 programadores number_of_coders sea ≥ 1
+    - minimo 2 programadores numb_of_coders sea ≥ 1
     - que los datos sean numericos excepto scheduler, y todos ellos mayores a 0
     - scheduler tiene que ser fifo o edf - compararemos con strcpm()
 

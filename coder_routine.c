@@ -22,13 +22,13 @@ void	wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
 		now = get_current_time_ms();
 		if (now >= dongle->available_at_ms)
 			break ;
-		ts.tv_sec  = (now + 50) / 1000;
+		ts.tv_sec = (now + 50) / 1000;
 		ts.tv_nsec = ((now + 50) % 1000) * 1000000;
 		pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
 	}
 }
 
-bool check_burnout(t_coder *self)
+bool	check_burnout(t_coder *self)
 {
 	pthread_mutex_lock(&self->ctx->burnout_mutex);
 	if (self->ctx->someone_burned)

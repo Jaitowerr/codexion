@@ -16,8 +16,8 @@ void	init_request_edf(t_request *req, t_coder *self)
 {
 	req->coder_id = self->id;
 	req->deadline = self->last_compile_ms + self->config->time_to_burnout;
-	req->granted  = false;
-	req->next     = NULL;
+	req->granted = false;
+	req->next = NULL;
 }
 
 void	insert_in_queue_edf(t_dongle *dongle, t_request *req)

@@ -12,7 +12,6 @@
 
 #include "coders/codexion.h"
 
-
 static bool	is_simulation_over(t_context *ctx)
 {
 	bool	over;
@@ -37,7 +36,6 @@ static bool	handle_coder_burnout(t_context *ctx, int idx)
 	return (true);
 }
 
-
 static bool	check_all_coders(t_context *ctx, bool *all_done)
 {
 	int			i;
@@ -45,7 +43,7 @@ static bool	check_all_coders(t_context *ctx, bool *all_done)
 
 	i = 0;
 	*all_done = true;
-	while (i < ctx->config->number_of_coders)
+	while (i < ctx->config->numb_of_coders)
 	{
 		if (ctx->coders[i].compile_count
 			>= ctx->config->number_of_compiles_required)
@@ -69,13 +67,12 @@ static void	wake_all_dongles(t_context *ctx)
 	t_request	*req;
 
 	i = 0;
-	while (i < ctx->config->number_of_coders)
+	while (i < ctx->config->numb_of_coders)
 	{
 		pthread_mutex_lock(&ctx->dongles[i].mutex);
 		req = ctx->dongles[i].wait_queue;
 		while (req)
 		{
-			// pthread_cond_broadcast(&req->cond);
 			pthread_cond_broadcast(&req->cond);
 			req = req->next;
 		}

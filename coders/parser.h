@@ -15,7 +15,7 @@
 
 typedef struct s_config
 {
-	int			number_of_coders;
+	int			numb_of_coders;
 	long		time_to_burnout;
 	long		time_to_compile;
 	long		time_to_debug;

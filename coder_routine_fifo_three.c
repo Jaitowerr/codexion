@@ -30,16 +30,17 @@ void	cleanup_on_burnout_single_fifo(t_dongle *first)
 	pthread_mutex_unlock(&first->mutex);
 }
 
-void	get_dongle_order_fifo(t_coder *self, t_dongle **first, t_dongle **second)
+void	get_dongle_order_fifo(t_coder *self, t_dongle **first,
+	t_dongle **second)
 {
 	if (self->id % 2 == 0)
 	{
-		*first  = self->right_dongle;
+		*first = self->right_dongle;
 		*second = self->left_dongle;
 	}
 	else
 	{
-		*first  = self->left_dongle;
+		*first = self->left_dongle;
 		*second = self->right_dongle;
 	}
 }

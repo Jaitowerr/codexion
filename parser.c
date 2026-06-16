@@ -5,7 +5,7 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
+/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
 /*   Updated: 2026/06/05 15:57:24 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -40,7 +40,7 @@ static bool	validate_coders(char *arg)
 {
 	if (!is_number(arg) || atoi(arg) < 1)
 	{
-		printf("Error: number_of_coders debe ser un número, mayor de 0 y menor a 2147483647.\n");
+		printf("Error: numb_of_coders must be between 0 and 2147483647\n");
 		return (false);
 	}
 	return (true);
@@ -49,23 +49,24 @@ static bool	validate_coders(char *arg)
 static bool	parse_int_params(t_config *config, char **argv)
 {
 	if (!parse_int_arg(&config->time_to_burnout, argv[2],
-			"Error: time_to_burnout debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: time_to_burnout must be between 0 and 2147483647"))
 		return (false);
 	if (!parse_int_arg(&config->time_to_compile, argv[3],
-			"Error: time_to_compile debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: time_to_compile must be between 0 and 2147483647"))
 		return (false);
 	if (!parse_int_arg(&config->time_to_debug, argv[4],
-			"Error: time_to_debug debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: time_to_debug must be between 0 and 2147483647"))
 		return (false);
 	if (!parse_int_arg(&config->time_to_refactor, argv[5],
-			"Error: time_to_refactor debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: time_to_refactor must be between 0 and 2147483647"))
 		return (false);
 	if (!parse_int_arg(&config->number_of_compiles_required,
 			argv[6],
-			"Error: number_of_compiles_required debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: number_of_compiles_required must be "
+			"between 0 and 2147483647"))
 		return (false);
 	if (!parse_int_arg(&config->dongle_cooldown, argv[7],
-			"Error: dongle_cooldown debe ser un número, mayor de 0 y menor a 2147483647."))
+			"Error: dongle_cooldown must be between 0 and 2147483647"))
 		return (false);
 	return (true);
 }
@@ -74,7 +75,7 @@ bool	parse_arguments(int argc, char **argv, t_config *config)
 {
 	if (argc != 9)
 	{
-		printf("Uso: %s number_of_coders\n time_to_burnout\n",
+		printf("Uso: %s numb_of_coders\n time_to_burnout\n",
 			argv[0]);
 		printf("      time_to_compile time_to_debug\n"
 			"      time_to_refactor number_of_compiles_required\n"
@@ -84,7 +85,7 @@ bool	parse_arguments(int argc, char **argv, t_config *config)
 	}
 	if (!validate_coders(argv[1]))
 		return (false);
-	config->number_of_coders = atoi(argv[1]);
+	config->numb_of_coders = atoi(argv[1]);
 	if (!parse_int_params(config, argv))
 		return (false);
 	if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)

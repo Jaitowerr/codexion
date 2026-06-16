@@ -12,7 +12,6 @@
 
 #include "coders/codexion.h"
 
-
 void	handle_burnout_edf(t_dongle *dongle, t_request *req)
 {
 	if (req->granted)
@@ -48,15 +47,16 @@ void	get_dongle_order_edf(t_coder *self, t_dongle **first, t_dongle **second)
 {
 	if (self->id % 2 == 0)
 	{
-		*first  = self->right_dongle;
+		*first = self->right_dongle;
 		*second = self->left_dongle;
 	}
 	else
 	{
-		*first  = self->left_dongle;
+		*first = self->left_dongle;
 		*second = self->right_dongle;
 	}
 }
+
 void	handle_immediate_dongle_acquisition(t_dongle *dongle, t_request *req,
 				t_coder *self)
 {

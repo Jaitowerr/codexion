@@ -18,12 +18,11 @@ static void	release_one_dongle(t_dongle *dongle, long next_available)
 	dongle->available_at_ms = next_available;
 	if (dongle->wait_queue)
 	{
-		// Lo dejamos taken = true, ya está reservado para el siguiente
 		dongle->wait_queue->granted = true;
 		pthread_cond_broadcast(&dongle->wait_queue->cond);
 	}
 	else
-		dongle->taken = false;  // Solo liberamos si nadie espera
+		dongle->taken = false;
 	pthread_mutex_unlock(&dongle->mutex);
 }
 

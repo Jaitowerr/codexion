@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MONITOR_ROUTINE
-# define MONITOR_ROUTINE
+#ifndef MONITOR_ROUTINE_H
+# define MONITOR_ROUTINE_H
 
 void	*monitor_routine(void *arg);
 
