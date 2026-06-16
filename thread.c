@@ -28,6 +28,7 @@ void create_threads(t_context *ctx)
     while (i < ctx->config->number_of_coders)
     {
         pthread_create(&ctx->threads[i], NULL, coder_executed, &ctx->coders[i]);
+        i++;
     }
     pthread_create(&ctx->monitor_thread, NULL, monitor_routine, ctx);
     i = 0;
