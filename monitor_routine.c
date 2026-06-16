@@ -13,7 +13,6 @@
 #include "coders/codexion.h"
 
 
-// Comprueba si la simulación ha parado por burnout
 static bool	is_simulation_over(t_context *ctx)
 {
 	bool	over;
@@ -48,7 +47,6 @@ static bool	check_all_coders(t_context *ctx, bool *all_done)
 	*all_done = true;
 	while (i < ctx->config->number_of_coders)
 	{
-		/* if this coder finished required compiles, skip burnout check */
 		if (ctx->coders[i].compile_count
 			>= ctx->config->number_of_compiles_required)
 		{

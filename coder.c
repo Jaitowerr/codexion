@@ -21,8 +21,6 @@ void init_coders(t_coder *coders, t_dongle *dongles, int count, t_config *config
     {
         coders[i].id = i + 1;
         coders[i].compile_count = 0;
-        // coders[i].last_compile_start.tv_sec = 0;
-        // coders[i].last_compile_start.tv_usec = 0;
 		coders[i].last_compile_ms = 0;
         coders[i].left_dongle = &dongles[i];
         coders[i].right_dongle = &dongles[(i + 1) % count];

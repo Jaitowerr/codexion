@@ -36,6 +36,7 @@ void	cleanup_on_burnout_both_edf(t_dongle *first, t_dongle *second)
 	second->taken = false;
 	pthread_mutex_unlock(&second->mutex);
 }
+
 void	cleanup_on_burnout_single_edf(t_dongle *first)
 {
 	pthread_mutex_lock(&first->mutex);

@@ -76,8 +76,8 @@ void    log_status(t_coder *self, const char *status)
     ctx = self->ctx;
     timestamp = get_current_time_ms() - ctx->start_time;
 
-    pthread_mutex_lock(&ctx->log_mutex); // Si nadie se ha quemado, imprimimos cualquier estado.
-    if (!ctx->someone_burned || strcmp(status, "burned out") == 0)     // Si alguien se ha quemado, solo permitimos imprimir el propio "burned out".
+    pthread_mutex_lock(&ctx->log_mutex);
+    if (!ctx->someone_burned || strcmp(status, "burned out") == 0)
     {
         printf("%lld %d %s\n", timestamp, self->id, status);
     }
