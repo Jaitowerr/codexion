@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/10 16:26:50 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/06/15 19:12:58 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ static void	release_one_dongle(t_dongle *dongle, long next_available)
 		// Lo dejamos taken = true, ya está reservado para el siguiente
 		dongle->wait_queue->granted = true;
 		pthread_cond_signal(&dongle->wait_queue->cond);
+		// pthread_cond_broadcast(&dongle->wait_queue->cond);
+
 	}
 	else
 		dongle->taken = false;  // Solo liberamos si nadie espera
