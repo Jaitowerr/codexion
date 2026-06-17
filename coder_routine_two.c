@@ -5,40 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/15 19:12:58 by aitorres         ###   ########.fr       */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
+/*   Updated: 2026/06/17 16:24:34 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders/codexion.h"
-
-// bool	release_and_cooldown(t_coder *self)
-// {
-// 	long	now_ms;
-// 	long	next_available;
-
-// 	now_ms = get_current_time_ms();
-// 	next_available = now_ms + self->config->dongle_cooldown;
-
-// 	self->left_dongle->available_at_ms = next_available;
-// 	self->left_dongle->taken = false;
-// 	pthread_mutex_unlock(&self->left_dongle->mutex);
-
-// 	// Solo si son diferentes hacemos el segundo unlock para evitar errores
-// 	if (self->left_dongle != self->right_dongle)
-// 	{
-// 		self->right_dongle->available_at_ms = next_available;
-// 		self->right_dongle->taken = false;
-// 		pthread_mutex_unlock(&self->right_dongle->mutex);
-// 	}
-
-// 	self->compile_count++;
-// 	return (false);
-// }
-
-
-
-
 
 static void	release_one_dongle(t_dongle *dongle, long next_available)
 {
@@ -46,14 +18,11 @@ static void	release_one_dongle(t_dongle *dongle, long next_available)
 	dongle->available_at_ms = next_available;
 	if (dongle->wait_queue)
 	{
-		// Lo dejamos taken = true, ya está reservado para el siguiente
 		dongle->wait_queue->granted = true;
-		pthread_cond_signal(&dongle->wait_queue->cond);
-		// pthread_cond_broadcast(&dongle->wait_queue->cond);
-
+		pthread_cond_broadcast(&dongle->wait_queue->cond);
 	}
 	else
-		dongle->taken = false;  // Solo liberamos si nadie espera
+		dongle->taken = false;
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
@@ -69,58 +38,37 @@ bool	release_and_cooldown(t_coder *self)
 	return (false);
 }
 
-// bool	release_and_cooldown(t_coder *self)
-// {
-// 	long	now_ms;
-// 	long	next_available;
+bool	sleep_with_burnout_check(t_coder *self, long ms)
+{
+	long	slept;
+	long	chunk;
 
-// 	now_ms = get_current_time_ms();
-// 	next_available = now_ms + self->config->dongle_cooldown;
-
-// 	//COOLDOWN - TERMINAR Y SOLTAR DONGLES
-// 	self->left_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
-// 	self->left_dongle->taken = false;
-// 	pthread_mutex_unlock(&self->left_dongle->mutex);
-
-// 	self->right_dongle->available_at_ms = next_available; //el cooldown le marcamos cuando estará disponible de nuevo
-// 	self->right_dongle->taken = false;
-// 	pthread_mutex_unlock(&self->right_dongle->mutex);
-
-// 	// printf("    - TERMINAR Y SOLTAR DONGLE programador ID-%i\n", self->id);
-// 	self->compile_count++;
-// 	return (false);
-// }
+	slept = 0;
+	while (slept < ms)
+	{
+		if (check_burnout(self))
+			return (true);
+		chunk = ms - slept;
+		if (chunk > 50)
+			chunk = 50;
+		usleep(chunk * 1000);
+		slept += chunk;
+	}
+	return (check_burnout(self));
+}
 
 bool	do_debug(t_coder *self)
 {
-    if (check_burnout(self)) return (true);
-    log_status(self, "is debugging"); // Primero el mensaje
-	usleep(self->config->time_to_debug * 1000); // Luego el tiempo
-	return (check_burnout(self));
+	if (check_burnout(self))
+		return (true);
+	log_status(self, "is debugging");
+	return (sleep_with_burnout_check(self, self->config->time_to_debug));
 }
 
 bool	do_refactor(t_coder *self)
 {
-    if (check_burnout(self)) return (true);
-    log_status(self, "is refactoring"); // Primero el mensaje
-	usleep(self->config->time_to_refactor * 1000); // Luego el tiempo
-	return (check_burnout(self));
+	if (check_burnout(self))
+		return (true);
+	log_status(self, "is refactoring");
+	return (sleep_with_burnout_check(self, self->config->time_to_refactor));
 }
-
-
-// bool	do_debug(t_coder *self)
-// {
-// 	// printf(" - DEBUGGING programador ID-%i\n", self->id);
-// 	usleep(self->config->time_to_debug * 1000);
-//     log_status(self, "is debugging");
-// 	return (check_burnout(self));
-// }
-
-// bool	do_refactor(t_coder *self)
-// {
-// 	//REFACTORIZAR
-// 	// printf(" - REFACTORIZANDO programador ID-%i\n", self->id);
-// 	usleep(self->config->time_to_refactor * 1000);
-//     log_status(self, "is refactoring");
-// 	return (check_burnout(self));
-// }
