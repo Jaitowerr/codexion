@@ -1,306 +1,268 @@
+*Este proyecto ha sido creado como parte del currículo de 42 por aitorres.*
+
+---
+
 # Codexion
-compite contra el tiempo en este emocionante desafío de concurrencia. Orquesta a múltiples personas que programan compitiendo por un número limitado de dongles USB mediante hilos POSIX, mutexes y planificación inteligente—domina la sincronización de recursos antes de que llegue el agotamiento.
 
+## Descripción
 
-cuando compilemos, que va a recibir el programa:
-El programa debe recibir los siguientes argumentos (todos obligatorios):
-    number_of_coders 
-    time_to_burnout
-    time_to_compile 
-    time_to_debug 
-    time_to_refactor 
-    number_of_compiles_required 
-    dongle_cooldown 
-    scheduler
+Codexion es una simulación del problema clásico de los filósofos cenando, adaptada al mundo del desarrollo de software: varios programadores compiten por dongles USB para poder compilar su código.
 
-    Ej: ./codexion 4 500 200 200 200 2 100 fifo
-8 argumentos mas el nombre dle rpograma 9 argumentos
-Necesitamos un parseo que compruebe:
-    - argc == 9
-    - minimo 2 programadores number_of_coders sea ≥ 1
-    - que los datos sean numericos excepto scheduler, y todos ellos mayores a 0
-    - scheduler tiene que ser fifo o edf - compararemos con strcpm()
+Cada programador necesita dos dongles (el suyo propio y el del vecino) para compilar. Una vez compilado, los suelta, espera un tiempo de cooldown, y pasa a depurar y refactorizar antes de volver a intentarlo. Si un programador tarda demasiado en conseguir compilar, se quema (*burnout*) y la simulación termina.
 
+El objetivo del proyecto es implementar una solución correcta al problema de concurrencia sin *deadlocks*, sin inanición y con detección precisa del burnout, ofreciendo dos políticas de planificación para la asignación de dongles: **FIFO** y **EDF** (*Earliest Deadline First*).
 
-Necesitamos un mak con:
-    - make        # Compila
-    - make clean  # Borra objetos
-    - make fclean # Borra ejecutable
-    - make re     # Limpia y reconstruye
+La simulación es configurable: número de programadores, tiempos de cada fase, compilaciones requeridas, cooldown entre usos del dongle y el planificador a usar.
 
+---
 
-luego como si fuesen objetos debemos crear a los programadores y sin dongles
-cada programador tendrá un dongle,
-realmente lo haremos como listas, pero el ultimo programador apuntará como next al primer programador, asi tenemos una lista, les guardamos con un id empezando en 1 y creciendo asi podemos dar la vuelta y saber cuando parar en caso de hacer algo
-QUE CONTIENe el programodor:
-    - ID
-    - Veces de compilacion contador
-    - ALGO APRA EL TIEMPO DE CUANDO EMPEZÓ A COMPILAR
-    - rEFERENCIA A SU DONGLE
-    - referencia dongle derecho, el del vecino
+## Instrucciones
 
-Qué contiene el Dongle:
-    - UN id que será el mismo que el rpogramador
-    - un bool de ocupado o no, o 1 y 0, pero mas facil de entender con bool
+### Compilación
 
+```bash
+make
+```
 
-para todo esto hay que entender la salida:
-    0 1 has taken a dongle
-    1 1 has taken a dongle
-    1 1 is compiling
-    201 1 is debugging
-    401 1 is refactorizing
-    402 2 has taken a dongle
-    403 2 has taken a dongle
-    403 2 is compiling
-    603 2 is debugging
-    803 2 is refactoring
-    ...
- que significa cada cosa:
-    [timestamp] [id_programador] [mensaje]
+Esto genera el ejecutable `codexion`. Para limpiar los objetos:
 
-Línea por línea
-    🔹 0 1 has taken a dongle
-        En el momento 0 ms, el programador con ID 1 ha cogido un dongle (el de su izquierda).
-    🔹 1 1 has taken a dongle
-        En el momento 1 ms, el programador 1 ha cogido el segundo dongle (el de su derecha). ¡Ahora puede compilar!
-    🔹 1 1 is compiling
-        En el momento 1 ms, el programador 1 empieza a compilar.
-    🔹 201 1 is debugging
-        Pasan 200 ms → En el momento 201 ms, el programador 1 entra en depuración.
-    🔹 401 1 is refactoring
-        Pasan otros 200 ms → En el momento 401 ms, el programador 1 entra en refactorización.
-    🔹 402 2 has taken a dongle
-        En el momento 402 ms, el programador 2 coge su primer dongle.
-    🔹 403 2 has taken a dongle
-        En el momento 403 ms, el programador 2 coge su segundo dongle. ¡Listo para compilar!
-    🔹 403 2 is compiling
-        En el momento 403 ms, el programador 2 empieza a compilar.
-    🔹 603 2 is debugging
-        Pasan 200 ms → En el momento 603 ms, el programador 2 entra en depuración.
-    🔹 803 2 is refactoring
-        Pasan otros 200 ms → En el momento 803 ms, el programador 2 entra en refactorización.
+```bash
+make clean
+```
 
-El tiempo como se calcula:
-    Todo se mide en milisegundos desde el inicio del programa.
-.
-    Programador 1 empieza en 0 ms.
-    Compila durante 200 ms → termina en 200 ms.
-    Depura 100 ms → termina en 300 ms.
-    Refactoriza 100 ms → termina en 400 ms.
+Para limpiar todo (objetos y ejecutable):
 
-Cuando se acaba, por dos cosas:
-    - SE QUEMA
-    - TODOS HAN COMPILADO   number_of_compiles_required = 5 cada programador
+```bash
+make fclean
+```
 
-LA QUEMA/LA PURGA
-    Cada vez que un programador termina de compilar (o al inicio si nunca ha compilado), se reinicia su contador de tiempo para quemarse.
-    Si antes de empezar a compilar otra vez, pasan más de time_to_burnout milisegundos, se quema.
-        time_to_burnout = 500 ms
-        El programador 1 termina de compilar en el instante 1000 ms.
-        Si antes de coger los dongles otra vez, pasan más de 500 ms (es decir, llega al instante 1501 ms), se imprime:
-            1501 1 burned out
-    Y el programa termina inmediatamente.
+Para recompilar desde cero:
 
-PASOS A SEGUIR
+```bash
+make re
+```
 
-Evento	¿Qué implica?
-Compilar	Toma 2 dongles, espera time_to_compile ms, los suelta.
-Depurar	Después de compilar, espera time_to_debug ms.
-Refactorizar	Después de depurar, espera time_to_refactor ms.
-Cooldown dongle	Después de soltarlo, no se puede tomar hasta pasados dongle_cooldown ms.
-Burnout	Si pasan más de time_to_burnout ms sin empezar a compilar de nuevo, se quema.
-Fin del programa	Si todos han compilado number_of_compiles_required veces, o alguien se quema.
+Si deseas ejecutar y limpiar:
+```bash
+make run
+```
 
+### Uso
 
-frase chula: 
-    Imagina un reloj que avanza segundo a segundo. Este es el ciclo de vida de un programador en la mesa
+```
+./codexion <numb_of_coders> <time_to_burnout> <time_to_compile> <time_to_debug> <time_to_refactor> <number_of_compiles_required> <dongle_cooldown> <scheduler>
+```
 
+Todos los tiempos están en **milisegundos**. El planificador acepta los valores `fifo` o `edf`.
 
-El Ciclo de Vida del Programador (Coder)
-[⌛ ESPERANDO ] -> Quiere compilar. Intenta coger 2 dongles (izq y der).
-      |
-[🏗️ COMPILANDO] -> ¡Tiene los 2 dongles! Bloquea a los demás.
-      |            (Dura: time_to_compile)
-      |            (Al terminar: suelta los dongles -> empieza cooldown)
-      |
-[🔍 DEPURANDO ] -> No necesita dongles. Trabaja solo.
-      |            (Dura: time_to_debug)
-      |
-[🔨 REFACTOR  ] -> No necesita dongles. Limpia el código.
-      |            (Dura: time_to_refactor)
-      |
-      +----------> Vuelve a empezar (Intenta compilar de nuevo)
+| Parámetro                   | Descripción                                               |
+|-----------------------------|-----------------------------------------------------------|
+| `numb_of_coders`          | Número de programadores (y de dongles)                    |
+| `time_to_burnout`           | Tiempo máximo sin compilar antes de quemarse              |
+| `time_to_compile`           | Duración de la fase de compilación                        |
+| `time_to_debug`             | Duración de la fase de depuración                         |
+| `time_to_refactor`          | Duración de la fase de refactorización                    |
+| `number_of_compiles_required` | Compilaciones que debe completar cada programador        |
+| `dongle_cooldown`           | Tiempo de espera del dongle tras ser liberado             |
+| `scheduler`                 | Política de planificación: `fifo` o `edf`                 |
 
-El Dongle y su "Enfriamiento" (Cooldown)
-    El dongle es un objeto compartido. Importante: Nadie puede tocar el dongle mientras esté OCUPADO o ENFRIÁNDOSE.
+### Ejemplos
 
-ESTADO: LIBRE 🟢 
-      |
-   (El programador X lo coge)
-      |
-ESTADO: OCUPADO 🔴 (Durante time_to_compile)
-      |
-   (El programador X lo suelta)
-      |
-ESTADO: ENFRIÁNDOSE ❄️ (Durante dongle_cooldown)
-      |
-      +----------> Vuelve a ESTADO: LIBRE 🟢
+**Ejecución básica (sin burnout):**
+```bash
+./codexion 3 800 200 200 200 3 50 fifo
+```
 
+**Prueba de burnout (el tiempo de burnout es menor que el ciclo):**
+```bash
+./codexion 3 100 200 200 200 10 50 fifo
+```
 
+**Prueba de cooldown con 2 programadores:**
+```bash
+./codexion 2 1000 100 100 100 5 500 fifo
+```
 
-La Regla del Quemado (Burnout)
-    El cronómetro se reinicia solo cuando el programador EMPIEZA a compilar.
+**Misma prueba con planificador EDF:**
+```bash
+./codexion 3 800 200 200 200 3 50 edf
+```
 
-TEMPORIZADOR DE VIDA: [||||||||||] (Máximo: time_to_burnout)
+**Con Valgrind para comprobar fugas de memoria:**
+```bash
+valgrind ./codexion 3 500 200 100 100 2 100 fifo
+```
 
-- Inicio simulation: Cronómetro empieza.
-- Si llega a 0: El programador muere -> FIN DEL PROGRAMA.
-- Si empieza a compilar: Cronómetro se pone al máximo otra vez.
+---
 
+## Blocking cases handled
 
+### Prevención de deadlock (condiciones de Coffman)
 
+El deadlock clásico en el problema de los filósofos ocurre cuando cada hilo toma un recurso y espera indefinidamente por el otro, formando un ciclo. En Codexion se rompe esta situación invirtiendo el orden de adquisición de los dongles según la paridad del ID del programador:
 
-
-valgrind ./codexion 4 500 200 200 200 2 100 fifo
-
-
-
-void *coder_executed(void *arg)
+```c
+void get_dongle_order_fifo(t_coder *self, t_dongle **first, t_dongle **second)
 {
-	t_coder *self;
-	
-	self = (t_coder *)arg;	//casteo porque recibe void, no sabe que es por lo tanto casteo y debe ir bien, no se si poner un if con la funcion free
-
-	while(self->compile_count < self->config->number_of_compiles_required)
-	{
-		// printf("COMPILE COUNT: %i\n", self->compile_count);
-		printf("PROGRAMADOR ID-%i COMPILE COUNT: %i\n", self->id, self->compile_count);
-		
-		//REFACTORIZAR
-		printf(" - REFACTORIZANDO\n");
-		usleep(self->config->time_to_refactor * 1000);		//lo cmabios de milisegundos a microsegundos  y duerme un hilo, significa que deja de consumir cpu ese hilo, El sistema operativo lo pone en pausa, Pasado el tiempo, el hilo se reanuda
-		// printf("%d", usleep(self->config->time_to_refactor * 1000));
-
-		//COGER DONGLES
-		printf("  - COGER DONGLES\n");
-
-		//COMPILAR
-		printf("   - COMPILAR\n");
-
-		//TERMINAR Y SOLTAR DOONGLES
-		printf("    - TERMINAR Y SOLTAR DONGLE\n");
-	
-		self->compile_count++;
-	
-	}
-	
-	return NULL;
-	
+    if (self->id % 2 == 0)
+    {
+        *first  = self->right_dongle;
+        *second = self->left_dongle;
+    }
+    else
+    {
+        *first  = self->left_dongle;
+        *second = self->right_dongle;
+    }
 }
-primera parte  		//REFACTORIZAR
-prueba:
-printf("Voy a dormir 1 segundo...\n");
-usleep(1000000); // 1.000.000 µs = 1 segundo
-printf("¡He despertado!\n");
+```
 
-SEGUNDA PARTE  //COGER DONGLES
-El programador necesita coger sus dos dongles (izquierdo y derecho)
-¿Qué pasa si otro programador ya tiene uno de esos dongles?
+Los programadores de ID par adquieren primero el dongle derecho y los de ID impar el izquierdo. Esto rompe la simetría y hace imposible que se forme el ciclo de espera circular que define un deadlock.
 
-Aquí es donde entra el mutex.
+### Prevención de inanición
 
-¡Exacto! Aquí es donde entra la parte más importante del proyecto. Vamos paso a paso.
+Sin un mecanismo de ordenación, un programador podría quedar indefinidamente en espera mientras otros más rápidos se adelantan continuamente. Ambos planificadores abordan esto de forma diferente:
 
-✅ ¿Qué debe hacer el programador aquí?
-El programador necesita coger sus dos dongles (izquierdo y derecho) para poder compilar.
+- **FIFO**: la cola de espera de cada dongle es estrictamente por orden de llegada. El primero en encolar es el primero en recibir el dongle cuando se libera. Ningún hilo puede saltarse a otro que ya estaba esperando.
 
-Pero hay un problema:
+- **EDF**: los hilos con el *deadline* más próximo (es decir, los que están más cerca del burnout) se colocan delante en la cola. Aunque un hilo rápido llegue después, si su deadline es más tardío, espera. Esto garantiza que el programador con más urgencia compile antes de quemarse.
 
-¿Qué pasa si otro programador ya tiene uno de esos dongles?
+### Gestión del cooldown
 
-Aquí es donde entra el mutex.
+Tras liberar los dongles, éstos no están disponibles de inmediato. Se registra el instante en que vuelven a estar disponibles (`available_at_ms`) y, si un hilo llega antes de ese momento, espera mediante `pthread_cond_timedwait` en intervalos cortos de 50 ms para no bloquear indefinidamente ni consumir CPU:
 
-🧠 ¿Qué es un mutex? (Explicación para tontos)
-Imagina que tienes una llave de un baño.
+```c
+void wait_cooldown_fifo_edf(t_dongle *dongle, t_request *req, t_coder *self)
+{
+    struct timespec ts;
+    long long       now;
 
-Si alguien está dentro, la llave está cogida y debes esperar.
-Cuando sale, devuelve la llave y tú puedes entrar.
-Un mutex funciona igual:
+    while (!check_burnout(self))
+    {
+        now = get_current_time_ms();
+        if (now >= dongle->available_at_ms)
+            break;
+        ts.tv_sec  = (now + 50) / 1000;
+        ts.tv_nsec = ((now + 50) % 1000) * 1000000;
+        pthread_cond_timedwait(&req->cond, &dongle->mutex, &ts);
+    }
+}
+```
 
-pthread_mutex_lock → Coger la llave (si alguien la tiene, esperas)
-pthread_mutex_unlock → Devolver la llave
-por eso hacemos
-pthread_mutex_lock(&self->left_dongle->mutex);   // Espera si está ocupado
-pthread_mutex_lock(&self->right_dongle->mutex);  // Espera si está ocupado
+Gracias al timedwait, el hilo se desbloquea automáticamente cuando expira el cooldown sin necesidad de que nadie lo despierte explícitamente.
 
+### Detección precisa del burnout
 
-vale, ahora incrementamos con el COOLDOWN
-despues de usar un dongle, hay que esperar un tiempo de enfriamiento
-como lo sincronizamos
-    1. Programador suelta el dongle
-    2. Guardamos en available_at = ahora + dongle_cooldown
-    3. Cuando otro programador intenta cogerlo...
-    4. Comprueba si ahora >= available_at
-    5. Si no → espera
-    6. Si sí → lo coge
+El monitor corre en un hilo separado y comprueba periódicamente si algún programador ha excedido `time_to_burnout` desde su última compilación. La detección es atómica: el primer monitor que detecta el problema activa la bandera `someone_burned` bajo mutex, y si otro hilo llega al mismo tiempo, comprueba que ya estaba activa y no emite un segundo mensaje:
 
+```c
+static bool handle_coder_burnout(t_context *ctx, int idx)
+{
+    pthread_mutex_lock(&ctx->burnout_mutex);
+    if (ctx->someone_burned)
+    {
+        pthread_mutex_unlock(&ctx->burnout_mutex);
+        return (true);
+    }
+    ctx->someone_burned = true;
+    pthread_mutex_unlock(&ctx->burnout_mutex);
+    log_status(&ctx->coders[idx], "burned out");
+    return (true);
+}
+```
 
+Inmediatamente después, el monitor despierta a todos los hilos bloqueados en colas de dongles mediante `pthread_cond_broadcast` para que salgan limpiamente sin quedarse bloqueados para siempre.
 
+### Serialización del log
 
-EJECUCIÓN:
+Todos los mensajes de estado pasan por `log_status`, que toma el mutex `log_mutex` antes de escribir. Esto garantiza que las líneas de log no se entrelacen entre sí y que el timestamp sea coherente con el estado en el momento de la impresión. Además, una vez detectado el burnout, sólo se permite imprimir el mensaje `"burned out"` del programador afectado; el resto de los estados quedan silenciados para que el output sea determinista.
 
-1	El programador quiere compilar.
-2	Para compilar necesita dos dongles.
-3	Cuando consigue los dos dongles:
-    -	imprime que ha cogido dongle izquierdo
-    -	imprime que ha cogido dongle derecho
-    -	imprime que está compilando
-    -	duerme time_to_compile
-4	Suelta los dongles.
-5	Depura durante time_to_debug.
-6	Refactoriza durante time_to_refactor.
-7	Vuelve a intentar compilar.
+---
 
-IMPORTANTE:
-Entonces si el programador 1 tiene los dongles y está compilando, el programador 2 puede estar:
+## Thread synchronization mechanisms
 
-  1 esperando dongles
-  2 depurando
-  3 refactorizando
+### `pthread_mutex_t`: protección de estado compartido
 
-Lo único que NO puede hacer es compilar sin tener los dos dongles.
+Se usan tres mutexes principales:
 
+- **`dongle->mutex`** (uno por dongle): protege el estado del dongle (`taken`, `available_at_ms`, `wait_queue`). Cualquier hilo que quiera leer o modificar estos campos debe adquirir este mutex primero. Esto evita condiciones de carrera entre hilos que compiten por el mismo recurso.
 
-RESUMEN DE QUE HACE CADA COSA
-usleep    // Pausa la ejecución el número de microsegundos indicado. RECIBE MICROSEGUNDOS
-gettimeofday  // Mira el reloj ahora mismo y dime la hora en milisegundos. Si no recibe parámetro rellena tv con la hora actual real del ordenador.
+- **`ctx->burnout_mutex`**: protege la bandera `someone_burned`. Como tanto los hilos de programadores como el monitor pueden escribir sobre ella, el acceso debe ser exclusivo. Leerla sin el mutex podría llevar a que dos hilos detecten el burnout al mismo tiempo y emitan mensajes duplicados.
 
+- **`ctx->log_mutex`**: serializa las escrituras a `stdout`. Sin él, dos `printf` simultáneos podrían solaparse a nivel de bytes en el buffer de salida.
 
+### `pthread_cond_t`: espera eficiente sin *busy-wait*
 
+Cada nodo de la cola de espera (`t_request`) tiene su propia variable de condición `cond`. Cuando un hilo no puede adquirir un dongle, en lugar de iterar en un bucle consumiendo CPU, se suspende sobre su `cond` bajo el mutex del dongle:
 
+```c
+void wait_for_grant_or_burnout_fifo(t_dongle *dongle, t_request *req, t_coder *self)
+{
+    while (!req->granted && !check_burnout(self))
+        pthread_cond_wait(&req->cond, &dongle->mutex);
+}
+```
 
-1. ⚒️ COMPILAR (Compiling)
-- ¿Qué es? Es cuando envías tu código al servidor para que se convierta en un programa.
-- Duración: time_to_compile.
+`pthread_cond_wait` libera atómicamente el mutex y suspende el hilo. Cuando otro hilo llama a `pthread_cond_broadcast` sobre esa condición, el hilo se reactiva, vuelve a adquirir el mutex y comprueba si la concesión fue efectiva o si hay un burnout.
 
-2. 🐞 DEPURAR (Debugging)
-- ¿Qué es? Una vez que has compilado, miras si hay fallos (bugs). Estás leyendo la pantalla y pensando.
-- ¿Necesitas dongles? NO. Ya has compilado, ahora solo estás mirando el resultado.
-- Duración: time_to_debug.
+### Protocolo de concesión del dongle
 
+Cuando el poseedor de un dongle lo libera, no simplemente pone `taken = false` y se marcha. Mira si hay alguien en la cola de espera y, si lo hay, le concede directamente el dongle (mantiene `taken = true`) y lo despierta:
 
-3. 📝 REFACTORIZAR (Refactoring)
-- ¿Qué es? Has visto los fallos y ahora estás reescribiendo el código para que sea mejor y más limpio. Estás escribiendo en tu teclado.
-- ¿Necesitas dongles? NO. Estás escribiendo en local en tu ordenador. No necesitas enviarlo a ningún sitio todavía.
-- Duración: time_to_refactor.
+```c
+static void release_one_dongle(t_dongle *dongle, long next_available)
+{
+    pthread_mutex_lock(&dongle->mutex);
+    dongle->available_at_ms = next_available;
+    if (dongle->wait_queue)
+    {
+        dongle->wait_queue->granted = true;
+        pthread_cond_broadcast(&dongle->wait_queue->cond);
+    }
+    else
+        dongle->taken = false;
+    pthread_mutex_unlock(&dongle->mutex);
+}
+```
 
+Esto garantiza que la transición de propietario es atómica: nunca hay un instante en que el dongle esté libre pero nadie lo haya recibido todavía, lo que podría dar lugar a que un hilo recién llegado se adelantase a quien ya llevaba tiempo esperando.
 
+### Comunicación thread-safe entre programadores y monitor
 
+Los programadores y el monitor no comparten datos directamente más allá de `ctx->someone_burned` y el estado de los dongles, ambos protegidos por sus respectivos mutexes. La señal de parada fluye así:
 
-Qué es el Burnout en este proyecto???
+1. El monitor detecta burnout, toma `burnout_mutex`, activa `someone_burned`, lo libera.
+2. El monitor llama a `wake_all_dongles`, que recorre todos los dongles y hace `pthread_cond_broadcast` sobre cada nodo de sus colas.
+3. Los hilos bloqueados en `pthread_cond_wait` se despiertan, comprueban `check_burnout` (que toma `burnout_mutex` internamente) y, al encontrarlo activo, salen limpiamente.
 
+Esta cadena garantiza que ningún hilo quede suspendido indefinidamente tras el burnout, independientemente de en qué punto del ciclo se encuentre.
 
+### Comportamiento observable de los hilos
 
+Una consideración importante al probar la simulación: los hilos no están numerados por orden de ejecución. El sistema operativo los planifica libremente según la carga del sistema, el estado de la CPU y otros factores. En dos ejecuciones con los mismos parámetros, el orden en que los programadores acceden a los dongles puede variar. Lo que los planificadores FIFO y EDF garantizan es el orden *relativo* dentro de la cola de espera de cada dongle, no el orden global de ejecución entre todos los hilos.
 
+---
 
+## Recursos
+
+### Referencias sobre el problema de los filósofos y concurrencia
+
+- Dijkstra, E. W. (1971). *Hierarchical ordering of sequential processes.* — artículo original donde se formula el problema.
+- Tanenbaum, A. S. — *Modern Operating Systems* (cualquier edición). Capítulos sobre sincronización de procesos y problemas clásicos de concurrencia.
+- [The Little Book of Semaphores](https://greenteapress.com/wp/semaphore/) — Allen B. Downey. Libro gratuito con variantes del problema y soluciones detalladas.
+- [POSIX Threads Programming](https://hpc-tutorials.llnl.gov/posix/) — Blaise Barney, Lawrence Livermore National Laboratory. Referencia práctica completa sobre pthreads.
+- Páginas del manual: `man pthread_mutex_lock`, `man pthread_cond_wait`, `man pthread_cond_timedwait`, `man gettimeofday`.
+
+### Sobre planificación EDF
+
+- Liu, C. L., & Layland, J. W. (1973). *Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment.* Journal of the ACM, 20(1). — artículo fundacional del EDF.
+
+### Uso de IA
+
+Durante el desarrollo de este proyecto se utilizó Claude (Anthropic) como herramienta de apoyo en las siguientes áreas:
+
+- **Diseño de la estructura de la cola de espera por dongle (`t_request`, `wait_queue`)**: consultas sobre cómo implementar una lista enlazada por pila de llamadas sin memoria dinámica adicional y cómo insertar nodos FIFO y EDF manteniendo el orden correcto.
+- **Implementación de `pthread_cond_wait` y `pthread_cond_timedwait`**: aclaración de la semántica de liberación atómica del mutex al suspender el hilo, y cómo calcular correctamente el `struct timespec` para el timedwait.
+- **Depuración de la lógica del cooldown**: discusión sobre cómo gestionar el `available_at_ms` de forma que el hilo que recibe la concesión espere el tiempo correcto antes de usar el dongle.
+
+La lógica de concurrencia, la estructura del proyecto, la detección de burnout, la estrategia anti-deadlock y la implementación de ambos planificadores fueron diseñadas y escritas por el autor.

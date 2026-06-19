@@ -1,19 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   dongle.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jaitowerr <jaitowerr@student.42madrid.com> +#+  +:+       +#+        */
+/*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/04 00:00:00 by jaitowerr        ###   ########.fr       */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
+/*   Updated: 2026/06/04 00:00:00 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DONGLE_H
 # define DONGLE_H
 
-struct s_context;
+struct	s_context;
+
+typedef struct s_request
+{
+	int					coder_id;
+	long long			deadline;
+	bool				granted;
+	pthread_cond_t		cond;
+	struct s_request	*next;
+}	t_request;
 
 typedef struct s_waiter
 {
@@ -24,23 +33,16 @@ typedef struct s_waiter
 
 typedef struct s_dongle
 {
-	int             id;	//identificador mismo que coder
-	int             coder_id;	// el id del coder al que pertenece
-	bool            taken;	//si está siendo usado o no
-	long			available_at_ms;	//fecha/hora en el qiue estará disponible  dongle_cooldown
-	pthread_mutex_t	mutex;	//sirve para proteger acceso porque varios programadores pueden intentar cogerlo a la vez
-	pthread_cond_t	cond;	//sirve para avisar a los hilos que esperana que esté libre
-	// struct s_dongle *next;
-	// struct s_dongle *prev;
-	t_waiter        *wait_queue; // La lista de gente esperando este dongle
-}					t_dongle;
+	int				id;
+	int				coder_id;
+	bool			taken;
+	long			available_at_ms;
+	pthread_mutex_t	mutex;
+	pthread_cond_t	cond;
+	t_request		*wait_queue;
+}	t_dongle;
 
-t_dongle 	*create_and_init_dongles(int count, struct s_context *ctx);
-
+t_dongle	*create_and_init_dongles(int count, struct s_context *ctx);
 void		init_dongles(t_dongle *dongles, int count);
-
-bool 		enqueue_waiter(t_dongle *dongle, int coder_id, long long priority);
-
-void 		dequeue_waiter(t_dongle *dongle, int coder_id);
 
 #endif

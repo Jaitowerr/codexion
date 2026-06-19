@@ -1,68 +1,107 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor_routine.c                                   :+:      :+:    :+:   */
+/*   monitor_routine.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
-/*   Updated: 2026/06/10 18:14:23 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/06/05 13:04:04 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders/codexion.h"
 
-
-static bool all_finish(t_context *ctx)
+static bool	is_simulation_over(t_context *ctx)
 {
-	int i;
+	bool	over;
 
-	i = 0;
-	while ( i < ctx->config->number_of_coders)
-	{
-		if (ctx->coders[i].compile_count < ctx->config->number_of_compiles_required)
-			return false;
-		i++;
-	}
-	return true;
+	pthread_mutex_lock(&ctx->burnout_mutex);
+	over = ctx->someone_burned;
+	pthread_mutex_unlock(&ctx->burnout_mutex);
+	return (over);
 }
 
-void *monitor_routine(void *arg)
+static bool	handle_coder_burnout(t_context *ctx, int idx)
 {
-    t_context 	*ctx;
-	int 		i;
+	pthread_mutex_lock(&ctx->burnout_mutex);
+	if (ctx->someone_burned)
+	{
+		pthread_mutex_unlock(&ctx->burnout_mutex);
+		return (true);
+	}
+	ctx->someone_burned = true;
+	pthread_mutex_unlock(&ctx->burnout_mutex);
+	log_status(&ctx->coders[idx], "burned out");
+	return (true);
+}
+
+static bool	check_all_coders(t_context *ctx, bool *all_done)
+{
+	int			i;
 	long long	now;
 
-    ctx = (t_context *)arg;	// casteamos
-
-	while (!ctx->someone_burned && !all_finish(ctx))
+	i = 0;
+	*all_done = true;
+	while (i < ctx->config->numb_of_coders)
 	{
-		i = 0;
-		while (i < ctx->config->number_of_coders)
+		if (ctx->coders[i].compile_count
+			>= ctx->config->number_of_compiles_required)
 		{
-			now = get_current_time_ms();
-			if (now - ctx->coders[i].last_compile_ms > ctx->config->time_to_burnout)
-			{
-				pthread_mutex_lock(&ctx->burnout_mutex);
-				ctx->someone_burned = true;
-				log_status(arg, "DIEEEEEEDDDDDDDD!!!!!!!!!!!");
-				printf("                         monitor_routine   ***************BURNOUT programador ID-%i\n", ctx->coders[i].id);
-				pthread_mutex_unlock(&ctx->burnout_mutex);
-				
-				// Despertar a todos los que estén esperando en algún dongle
-				int j = 0;
-				while (j < ctx->config->number_of_coders)
-				{
-					pthread_mutex_lock(&ctx->dongles[j].mutex);
-					pthread_cond_broadcast(&ctx->dongles[j].cond);
-					pthread_mutex_unlock(&ctx->dongles[j].mutex);
-					j++;
-				}
-				break;
-			}
 			i++;
+			continue ;
 		}
-		usleep(500);
+		now = get_current_time_ms();
+		if (now > ctx->coders[i].last_compile_ms
+			+ ctx->config->time_to_burnout)
+			return (handle_coder_burnout(ctx, i));
+		*all_done = false;
+		i++;
+	}
+	return (false);
+}
+
+static void	wake_all_dongles(t_context *ctx)
+{
+	int			i;
+	t_request	*req;
+
+	i = 0;
+	while (i < ctx->config->numb_of_coders)
+	{
+		pthread_mutex_lock(&ctx->dongles[i].mutex);
+		req = ctx->dongles[i].wait_queue;
+		while (req)
+		{
+			pthread_cond_broadcast(&req->cond);
+			req = req->next;
+		}
+		pthread_mutex_unlock(&ctx->dongles[i].mutex);
+		i++;
+	}
+}
+
+void	*monitor_routine(void *arg)
+{
+	t_context	*ctx;
+	bool		all_done;
+
+	ctx = (t_context *)arg;
+	while (1)
+	{
+		if (is_simulation_over(ctx))
+		{
+			wake_all_dongles(ctx);
+			break ;
+		}
+		if (check_all_coders(ctx, &all_done))
+		{
+			wake_all_dongles(ctx);
+			break ;
+		}
+		if (all_done)
+			break ;
+		usleep(5000);
 	}
 	return (NULL);
 }

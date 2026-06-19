@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor_routine.h                                   :+:      :+:    :+:   */
+/*   monitor_routine.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: aitorres  <aitorres @student.42madrid.com> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 00:00:00 by jaitowerr         #+#    #+#             */
-/*   Updated: 2026/06/10 18:04:32 by aitorres         ###   ########.fr       */
+/*   Created: 2026/06/04 00:00:00 by aitorres          #+#    #+#             */
+/*   Updated: 2026/06/04 00:00:00 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MONITOR_ROUTINE
-# define MONITOR_ROUTINE
+#ifndef MONITOR_ROUTINE_H
+# define MONITOR_ROUTINE_H
 
-void *monitor_routine(void *arg);
+void	*monitor_routine(void *arg);
 
 #endif
